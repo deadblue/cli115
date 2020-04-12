@@ -3,7 +3,7 @@ package cli115
 import (
 	"dead.blue/cli115/command"
 	"dead.blue/cli115/container"
-	"dead.blue/cli115/context"
+	"dead.blue/cli115/core"
 	"github.com/deadblue/elevengo"
 	"github.com/peterh/liner"
 )
@@ -15,14 +15,14 @@ func Run() (err error) {
 
 func createTerminal(opts *Options) *Terminal {
 	agent := elevengo.Default()
-	ctx := &context.Context{
+	ctx := &core.Context{
 		Agent:  agent,
 		Prefix: "115",
 		Path:   container.NewStack(),
 	}
 	t := &Terminal{
-		context: ctx,
-		state:   createLinerState(),
+		ctx:   ctx,
+		state: createLinerState(),
 	}
 	t.Register(&command.LsCommand{},
 		&command.PwdCommand{})

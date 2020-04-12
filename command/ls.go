@@ -1,7 +1,7 @@
 package command
 
 import (
-	"dead.blue/cli115/context"
+	"dead.blue/cli115/core"
 	"github.com/deadblue/elevengo"
 	"github.com/olekukonko/tablewriter"
 	"os"
@@ -14,10 +14,10 @@ func (c *LsCommand) Name() string {
 	return "ls"
 }
 
-func (c *LsCommand) Exec(context *context.Context, args string) (err error) {
+func (c *LsCommand) Exec(ctx *core.Context, args string) (err error) {
 	dirId := "0"
-	if !context.Path.IsEmpty() {
-		dirId = (context.Path.Top()).(string)
+	if !ctx.Path.IsEmpty() {
+		dirId = (ctx.Path.Top()).(string)
 	}
 	w := tablewriter.NewWriter(os.Stdout)
 	w.SetAutoWrapText(false)
@@ -26,7 +26,7 @@ func (c *LsCommand) Exec(context *context.Context, args string) (err error) {
 		"ID", "Size", "Name",
 	})
 	for cursor := elevengo.FileCursor(); cursor.HasMore(); cursor.Next() {
-		files, err := context.Agent.FileList(dirId, cursor)
+		files, err := ctx.Agent.FileList(dirId, cursor)
 		if err != nil {
 			return err
 		} else {

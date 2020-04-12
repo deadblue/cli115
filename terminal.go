@@ -1,7 +1,7 @@
 package cli115
 
 import (
-	"dead.blue/cli115/context"
+	"dead.blue/cli115/core"
 	"errors"
 	"github.com/peterh/liner"
 	"strings"
@@ -9,27 +9,27 @@ import (
 
 type Command interface {
 	Name() string
-	Exec(context *context.Context, args string) (err error)
+	Exec(ctx *core.Context, args string) (err error)
 }
 
 type Terminal struct {
-	state    *liner.State
-	context  *context.Context
-	commands map[string]Command
+	state *liner.State
+	ctx   *core.Context
+	cmds  map[string]Command
 }
 
 func (t *Terminal) Register(cmds ...Command) {
-	if t.commands == nil {
-		t.commands = make(map[string]Command)
+	if t.cmds == nil {
+		t.cmds = make(map[string]Command)
 	}
 	for _, cmd := range cmds {
-		t.commands[cmd.Name()] = cmd
+		t.cmds[cmd.Name()] = cmd
 	}
 }
 
 func (t *Terminal) Run() (err error) {
 	for alive := true; alive; {
-		if input, err := t.state.Prompt(t.context.Prefix); err != nil {
+		if input, err := t.state.Prompt(t.ctx.Prefix); err != nil {
 			alive = false
 		} else {
 			input = strings.TrimSpace(input)
@@ -46,8 +46,8 @@ func (t *Terminal) handle(input string) (err error) {
 	if pos > 0 {
 		cmd, args = input[:pos], input[pos+1:]
 	}
-	if c, ok := t.commands[cmd]; ok {
-		return c.Exec(t.context, args)
+	if c, ok := t.cmds[cmd]; ok {
+		return c.Exec(t.ctx, args)
 	} else {
 		return errors.New("no such command")
 	}
