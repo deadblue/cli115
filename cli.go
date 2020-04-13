@@ -4,29 +4,46 @@ import (
 	"dead.blue/cli115/command"
 	"dead.blue/cli115/container"
 	"dead.blue/cli115/core"
-	"github.com/deadblue/elevengo"
 	"github.com/peterh/liner"
 )
 
-func Run() (err error) {
+func Run() error {
 	opts := FromCommandLine()
-	return createTerminal(opts).Run()
+	if t, err := initTerminal(opts); err == nil {
+		return t.Run()
+	} else {
+		return err
+	}
 }
 
-func createTerminal(opts *Options) *Terminal {
-	agent := elevengo.Default()
-	ctx := &core.Context{
-		Agent:  agent,
-		Prefix: "115",
-		Path:   container.NewStack(),
+func initTerminal(opts *Options) (t *Terminal, err error) {
+	ctx, err := initContext(opts)
+	if err != nil {
+		return
 	}
-	t := &Terminal{
+	t = &Terminal{
 		ctx:   ctx,
 		state: createLinerState(),
 	}
+	// register commands
 	t.Register(&command.LsCommand{},
-		&command.PwdCommand{})
-	return t
+		&command.PwdCommand{},
+		&command.PullCommand{},
+		&command.PushCommand{},
+		&command.PlayCommand{})
+	return
+}
+
+func initContext(opts *Options) (ctx *core.Context, err error) {
+	agent, err := initAgent(opts)
+	if err == nil {
+		ctx = &core.Context{
+			Agent:  agent,
+			Prefix: "115",
+			Path:   container.NewStack(),
+		}
+	}
+	return
 }
 
 func createLinerState() *liner.State {
