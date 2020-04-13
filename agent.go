@@ -11,6 +11,11 @@ import (
 	"path"
 )
 
+var (
+	errUserCanceled  = errors.New("user canceled this login")
+	errUnknownStatus = errors.New("unknow QRcode status")
+)
+
 type CookieData struct {
 	Uid  string `json:"uid"`
 	Cid  string `json:"cid"`
@@ -25,8 +30,10 @@ func initAgent(opts *Options) (agent *elevengo.Agent, err error) {
 			return agent, nil
 		}
 	}
-	// prompt user to sign in
-	err = signIn(agent)
+	// prompt user to login
+	if err = login(agent); err == nil {
+		_ = saveCookie(agent, opts)
+	}
 	return
 }
 
@@ -65,35 +72,63 @@ func loadCookie(opts *Options) (cr *elevengo.Credentials, err error) {
 	return
 }
 
-func signIn(agent *elevengo.Agent) (err error) {
-	// TODO: handle QRcode expired
-	// load cookie failed, start QRcode signin
-	session, err := agent.QrcodeStart()
+func saveCookie(agent *elevengo.Agent, opts *Options) (err error) {
+	cr, err := agent.CredentialsExport()
 	if err != nil {
 		return
 	}
-	// Print QRcode
-	code, err := qrcode.New(session.Content, qrcode.Medium)
+	// try make directory
+	_ = os.MkdirAll(path.Dir(opts.CookieFile), 0644)
+	file, err := os.OpenFile(opts.CookieFile, os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
 		return
 	}
-	fmt.Println("Please scan the QRcode on mobile, add allow this sign-in:")
-	fmt.Print(code.ToSmallString(false))
-	// Wait sign-in
-	for wait := true; wait; {
-		if status, serr := agent.QrcodeStatus(session); serr != nil {
-			err = serr
-		} else {
-			if status.IsAllowed() {
-				err = agent.QrcodeLogin(session)
-				// TODO: store cookie into cookie file
-				wait = false
-			} else if status.IsCanceled() {
-				err = errors.New("user canceled")
-				wait = false
+	defer core.QuietlyClose(file)
+	je, data := json.NewEncoder(file), &CookieData{
+		Uid:  cr.UID,
+		Cid:  cr.CID,
+		Seid: cr.SEID,
+	}
+	return je.Encode(data)
+}
+
+func login(agent *elevengo.Agent) (err error) {
+	// retry when QRcode expired
+	for {
+		// Get QRcode
+		session, err := agent.QrcodeStart()
+		if err != nil {
+			return err
+		}
+		code, err := qrcode.New(session.Content, qrcode.Medium)
+		if err != nil {
+			return err
+		}
+		fmt.Println("Please scan the QRcode on mobile App:")
+		fmt.Print(code.ToSmallString(false))
+		// Wait for login
+		for wait := true; wait; {
+			if status, err := agent.QrcodeStatus(session); err != nil {
+				if elevengo.IsQrcodeExpire(err) {
+					fmt.Println("QRcode expired, request a new one ...")
+					wait = false
+				} else {
+					return err
+				}
+			} else {
+				if status.IsAllowed() {
+					return agent.QrcodeLogin(session)
+				} else if status.IsCanceled() {
+					return errUserCanceled
+				} else if status.IsWaiting() {
+					fmt.Println("Waiting for scanning...")
+				} else if status.IsScanned() {
+					fmt.Println("Please allow on you mobile App ...")
+				} else {
+					return errUnknownStatus
+				}
 			}
 		}
-
 	}
-	return
+	return nil
 }
