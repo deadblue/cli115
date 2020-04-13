@@ -17,12 +17,17 @@ func Run() error {
 }
 
 func initTerminal(opts *Options) (t *Terminal, err error) {
-	ctx, err := initContext(opts)
+	agent, err := initAgent(opts)
 	if err != nil {
 		return
 	}
 	t = &Terminal{
-		ctx:   ctx,
+		ctx: &core.Context{
+			Alive: true,
+			Agent: agent,
+			Path:  container.NewStack(),
+			User:  agent.User(),
+		},
 		state: createLinerState(),
 	}
 	// register commands
@@ -30,19 +35,8 @@ func initTerminal(opts *Options) (t *Terminal, err error) {
 		&command.PwdCommand{},
 		&command.PullCommand{},
 		&command.PushCommand{},
-		&command.PlayCommand{})
-	return
-}
-
-func initContext(opts *Options) (ctx *core.Context, err error) {
-	agent, err := initAgent(opts)
-	if err == nil {
-		ctx = &core.Context{
-			Agent:  agent,
-			Prefix: "115",
-			Path:   container.NewStack(),
-		}
-	}
+		&command.PlayCommand{},
+		&command.ExitCommand{})
 	return
 }
 

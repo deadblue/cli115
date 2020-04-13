@@ -2,19 +2,20 @@ package core
 
 import (
 	"dead.blue/cli115/container"
+	"fmt"
 	"github.com/deadblue/elevengo"
 )
 
 type Context struct {
-	Agent  *elevengo.Agent
-	Path   *container.Stack
-	Prefix string
+	//
+	Alive bool
+
+	Agent *elevengo.Agent
+	User  *elevengo.UserInfo
+
+	Path *container.Stack
 }
 
-func New() *Context {
-	return &Context{
-		Agent:  elevengo.Default(),
-		Path:   container.NewStack(),
-		Prefix: "115",
-	}
+func (c *Context) Prompt() string {
+	return fmt.Sprintf("%s@115:/ # ", c.User.Name)
 }

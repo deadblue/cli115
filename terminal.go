@@ -28,9 +28,9 @@ func (t *Terminal) Register(cmds ...Command) {
 }
 
 func (t *Terminal) Run() (err error) {
-	for alive := true; alive; {
-		if input, err := t.state.Prompt(t.ctx.Prefix); err != nil {
-			alive = false
+	for t.ctx.Alive {
+		if input, err := t.state.Prompt(t.ctx.Prompt()); err != nil {
+			return err
 		} else {
 			input = strings.TrimSpace(input)
 			err = t.handle(input)
