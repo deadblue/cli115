@@ -12,11 +12,6 @@ var (
 	errCommandNotExist = errors.New("no such command")
 )
 
-type Command interface {
-	Name() string
-	Exec(ctx *core.Context, args string) (err error)
-}
-
 type Terminal struct {
 	state *liner.State
 	ctx   *core.Context
@@ -71,6 +66,7 @@ func (t *Terminal) handleErr(err error) {
 }
 
 func (t *Terminal) Completer(line string) []string {
+
 	// TODO
 	return nil
 }
