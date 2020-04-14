@@ -7,7 +7,9 @@ import (
 	"go.dead.blue/cli115/core"
 )
 
-type ClearCommand struct{}
+type ClearCommand struct {
+	NoArgsCommand
+}
 
 func (c *ClearCommand) Name() string {
 	return "clear"

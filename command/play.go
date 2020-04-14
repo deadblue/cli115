@@ -8,7 +8,9 @@ import (
 	"os/exec"
 )
 
-type PlayCommand struct{}
+type PlayCommand struct {
+	ArgsCommand
+}
 
 func (c *PlayCommand) Name() string {
 	return "play"

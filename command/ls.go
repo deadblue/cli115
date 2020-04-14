@@ -9,7 +9,9 @@ import (
 	"strings"
 )
 
-type LsCommand struct{}
+type LsCommand struct {
+	ArgsCommand
+}
 
 func (c *LsCommand) Name() string {
 	return "ls"

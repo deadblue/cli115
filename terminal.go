@@ -12,6 +12,13 @@ var (
 	errCommandNotExist = errors.New("no such command")
 )
 
+type CompletePhase int
+
+const (
+	phaseName CompletePhase = iota
+	phaseArgs
+)
+
 type Terminal struct {
 	state *liner.State
 	ctx   *core.Context
@@ -44,13 +51,14 @@ func (t *Terminal) Run() (err error) {
 	return nil
 }
 
-func (t *Terminal) handle(input string) (err error) {
-	cmd, args := input, ""
-	pos := strings.IndexRune(input, ' ')
+func (t *Terminal) handle(line string) (err error) {
+	name, args := line, ""
+	pos := strings.IndexRune(line, ' ')
 	if pos > 0 {
-		cmd, args = input[:pos], input[pos+1:]
+		name = strings.TrimSpace(line[:pos])
+		args = strings.TrimSpace(line[:pos+1])
 	}
-	if c, ok := t.cmds[cmd]; !ok {
+	if c, ok := t.cmds[name]; !ok {
 		return errCommandNotExist
 	} else {
 		return c.Exec(t.ctx, args)
@@ -65,8 +73,40 @@ func (t *Terminal) handleErr(err error) {
 	}
 }
 
-func (t *Terminal) Completer(line string) []string {
-
-	// TODO
-	return nil
+func (t *Terminal) Completer(line string) (choices []string) {
+	// parse line
+	np, ap, phase := line, "", phaseName
+	pos := strings.IndexRune(line, ' ')
+	if pos > 0 {
+		phase = phaseArgs
+		np = strings.TrimSpace(line[:pos])
+		ap = strings.TrimSpace(line[:pos+1])
+	}
+	// fill choices
+	if phase == phaseName {
+		// Search command names
+		choices = make([]string, 0)
+		for name, cmd := range t.cmds {
+			if !strings.HasPrefix(name, np) {
+				continue
+			}
+			if cmd.HasArgs() {
+				choices = append(choices, name+" ")
+			} else {
+				choices = append(choices, name)
+			}
+		}
+	} else if phase == phaseArgs {
+		// Call command complete
+		cmd, ok := t.cmds[np]
+		if !ok {
+			return
+		}
+		cc, ok := cmd.(CommandCompleter)
+		if !ok {
+			return
+		}
+		return cc.Completer(t.ctx, ap)
+	}
+	return
 }

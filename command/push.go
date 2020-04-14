@@ -4,7 +4,9 @@ import (
 	"go.dead.blue/cli115/core"
 )
 
-type PushCommand struct{}
+type PushCommand struct {
+	ArgsCommand
+}
 
 func (c *PushCommand) Name() string {
 	return "push"

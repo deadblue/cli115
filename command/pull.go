@@ -4,7 +4,9 @@ import (
 	"go.dead.blue/cli115/core"
 )
 
-type PullCommand struct{}
+type PullCommand struct {
+	ArgsCommand
+}
 
 func (c *PullCommand) Name() string {
 	return "pull"

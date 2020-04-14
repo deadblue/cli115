@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-type CdCommand struct{}
+type CdCommand struct {
+	ArgsCommand
+}
 
 func (c *CdCommand) Name() string {
 	return "cd"
@@ -22,7 +24,6 @@ func (c *CdCommand) parsePath(ctx *core.Context, target string) (abs bool, dirs 
 		if dir == "" || dir == "." {
 			continue
 		}
-
 	}
 	return
 }

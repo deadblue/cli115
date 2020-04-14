@@ -9,7 +9,9 @@ import (
 /*
 "pwd" command print full path of current directory.
 */
-type PwdCommand struct{}
+type PwdCommand struct {
+	NoArgsCommand
+}
 
 func (c *PwdCommand) Name() string {
 	return "pwd"
