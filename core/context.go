@@ -1,21 +1,26 @@
 package core
 
 import (
-	"dead.blue/cli115/container"
 	"fmt"
 	"github.com/deadblue/elevengo"
 )
 
+type Dir struct {
+	Id   string
+	Name string
+}
+
 type Context struct {
-	//
+	// Flag to control the terminal lifecycle
 	Alive bool
 
 	Agent *elevengo.Agent
 	User  *elevengo.UserInfo
 
-	Path *container.Stack
+	Path  *Stack
+	Cache map[string]*elevengo.File
 }
 
-func (c *Context) Prompt() string {
-	return fmt.Sprintf("%s@115:/ # ", c.User.Name)
+func (c *Context) PromptString() string {
+	return fmt.Sprintf("%s:/ # ", c.User.Name)
 }
