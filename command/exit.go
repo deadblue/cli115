@@ -1,6 +1,6 @@
 package command
 
-import "dead.blue/cli115/core"
+import "go.dead.blue/cli115/core"
 
 type ExitCommand struct{}
 

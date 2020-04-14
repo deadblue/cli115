@@ -1,7 +1,7 @@
 package command
 
 import (
-	"dead.blue/cli115/core"
+	"go.dead.blue/cli115/core"
 )
 
 type PlayCommand struct{}

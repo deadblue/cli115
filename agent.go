@@ -1,12 +1,12 @@
 package cli115
 
 import (
-	"dead.blue/cli115/core"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/deadblue/elevengo"
 	"github.com/skip2/go-qrcode"
+	"go.dead.blue/cli115/core"
 	"os"
 	"path"
 )

@@ -1,4 +1,4 @@
-module dead.blue/cli115
+module go.dead.blue/cli115
 
 require (
 	github.com/deadblue/elevengo v0.1.2-0.20200412063843-c0c56021961a

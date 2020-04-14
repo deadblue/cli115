@@ -1,8 +1,8 @@
 package cli115
 
 import (
-	"dead.blue/cli115/command"
 	"github.com/peterh/liner"
+	"go.dead.blue/cli115/command"
 )
 
 func Run() error {

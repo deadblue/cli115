@@ -1,10 +1,10 @@
 package cli115
 
 import (
-	"dead.blue/cli115/core"
 	"errors"
 	"fmt"
 	"github.com/peterh/liner"
+	"go.dead.blue/cli115/core"
 	"strings"
 )
 

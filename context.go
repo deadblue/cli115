@@ -1,8 +1,8 @@
 package cli115
 
 import (
-	"dead.blue/cli115/core"
 	"github.com/deadblue/elevengo"
+	"go.dead.blue/cli115/core"
 )
 
 func createContext(agent *elevengo.Agent) (ctx *core.Context, err error) {

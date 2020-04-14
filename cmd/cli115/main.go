@@ -1,7 +1,7 @@
 package main
 
 import (
-	"dead.blue/cli115"
+	"go.dead.blue/cli115"
 )
 
 func main() {

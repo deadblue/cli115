@@ -1,8 +1,8 @@
 package command
 
 import (
-	"dead.blue/cli115/core"
 	"fmt"
+	"go.dead.blue/cli115/core"
 	"strings"
 )
 

@@ -1,9 +1,9 @@
 package command
 
 import (
-	"dead.blue/cli115/core"
 	"github.com/deadblue/elevengo"
 	"github.com/olekukonko/tablewriter"
+	"go.dead.blue/cli115/core"
 	"os"
 	"strconv"
 )
