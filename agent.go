@@ -47,14 +47,7 @@ func loadCookie(opts *Options) (cr *elevengo.Credentials, err error) {
 		}
 		return
 	}
-	// use default cookie path if not specify.
-	// default path is $CONFIG_DIR/cli115/cookie.json
-	if opts.CookieFile == "" {
-		if dir, err := os.UserConfigDir(); err == nil {
-			opts.CookieFile = path.Join(dir, "cli115", "cookie.json")
-		}
-	}
-	// try load cookie file
+	// load cookie from cookie file
 	file, err := os.Open(opts.CookieFile)
 	if err != nil {
 		return
@@ -73,23 +66,31 @@ func loadCookie(opts *Options) (cr *elevengo.Credentials, err error) {
 }
 
 func saveCookie(agent *elevengo.Agent, opts *Options) (err error) {
+	// export credentials
 	cr, err := agent.CredentialsExport()
 	if err != nil {
 		return
 	}
-	// try make directory
-	_ = os.MkdirAll(path.Dir(opts.CookieFile), 0755)
+	// make directory
+	if err = os.MkdirAll(path.Dir(opts.CookieFile), 0755); err != nil {
+		return
+	}
+	// open cookie file for writing
 	file, err := os.OpenFile(opts.CookieFile, os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
 		return
 	}
 	defer core.QuietlyClose(file)
+	// write to file
 	je, data := json.NewEncoder(file), &CookieData{
 		Uid:  cr.UID,
 		Cid:  cr.CID,
 		Seid: cr.SEID,
 	}
-	return je.Encode(data)
+	if err = je.Encode(data); err == nil {
+		fmt.Printf("Cookie saved at: %s", opts.CookieFile)
+	}
+	return err
 }
 
 func login(agent *elevengo.Agent) (err error) {
@@ -120,10 +121,8 @@ func login(agent *elevengo.Agent) (err error) {
 					return agent.QrcodeLogin(session)
 				} else if status.IsCanceled() {
 					return errUserCanceled
-				} else if status.IsWaiting() {
+				} else if status.IsWaiting() || status.IsScanned() {
 					fmt.Println("Waiting for scanning...")
-				} else if status.IsScanned() {
-					fmt.Println("Please allow on you mobile App ...")
 				} else {
 					return errUnknownStatus
 				}
