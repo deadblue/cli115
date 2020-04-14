@@ -52,3 +52,8 @@ func (t *Terminal) handle(input string) (err error) {
 		return errors.New("no such command")
 	}
 }
+
+func (t *Terminal) Completer(line string) []string {
+	// TODO
+	return nil
+}

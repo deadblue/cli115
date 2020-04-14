@@ -30,6 +30,7 @@ func initTerminal(opts *Options) (t *Terminal, err error) {
 		},
 		state: createLinerState(),
 	}
+	t.state.SetCompleter(t.Completer)
 	// register commands
 	t.Register(&command.LsCommand{},
 		&command.PwdCommand{},
