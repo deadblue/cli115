@@ -97,16 +97,17 @@ func (t *Terminal) Completer(line string) (choices []string) {
 			}
 		}
 	} else if phase == phaseArgs {
-		// Call command complete
+		// Find command
 		cmd, ok := t.cmds[np]
 		if !ok {
 			return
 		}
+		// Check whether command supports completer
 		cc, ok := cmd.(CommandCompleter)
 		if !ok {
 			return
 		}
-		return cc.Completer(t.ctx, ap)
+		choices = cc.Completer(t.ctx, ap)
 	}
 	return
 }
