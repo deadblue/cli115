@@ -29,9 +29,12 @@ func createTerminal(opts *Options) (t *Terminal, err error) {
 	}
 	t.state.SetCompleter(t.Completer)
 	// Register commands
-	t.Register(&command.ExitCommand{},
-		&command.LsCommand{},
+	t.Register(
+		&command.ExitCommand{},
+		&command.ClearCommand{},
+		&command.CdCommand{},
 		&command.PwdCommand{},
+		&command.LsCommand{},
 		&command.PullCommand{},
 		&command.PushCommand{},
 		&command.PlayCommand{})
