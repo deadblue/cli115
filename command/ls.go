@@ -2,10 +2,11 @@ package command
 
 import (
 	"github.com/deadblue/elevengo"
-	"github.com/olekukonko/tablewriter"
 	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/table"
 	"os"
-	"strconv"
+	"regexp"
+	"strings"
 )
 
 type LsCommand struct{}
@@ -19,26 +20,41 @@ func (c *LsCommand) Exec(ctx *core.Context, args string) (err error) {
 	if !ctx.Path.IsEmpty() {
 		dirId = (ctx.Path.Top()).(string)
 	}
-	w := tablewriter.NewWriter(os.Stdout)
-	w.SetAutoWrapText(false)
-	w.SetRowLine(false)
-	w.SetHeader([]string{
-		"ID", "Size", "Name",
-	})
+	reg := c.parsePattern(args)
+	// Clear cache, we will update it
+	ctx.Cache = make(map[string]*elevengo.File)
+	// Print file list
+	tbl := table.New().
+		AddColumn("Size", table.AlignRight).
+		AddColumn("Name", table.AlignLeft)
 	for cursor := elevengo.FileCursor(); cursor.HasMore(); cursor.Next() {
 		files, err := ctx.Agent.FileList(dirId, cursor)
 		if err != nil {
 			return err
 		} else {
 			for _, file := range files {
-				w.Append([]string{
-					file.FileId,
-					strconv.FormatInt(file.Size, 10),
-					file.Name,
-				})
+				// Update cache
+				ctx.Cache[file.Name] = file
+				if reg != nil && !reg.MatchString(file.Name) {
+					continue
+				}
+				if file.IsDirectory {
+					tbl.AppendRow([]string{"<DIR>", file.Name})
+				} else {
+					tbl.AppendRow([]string{core.FormatSize(file.Size), file.Name})
+				}
+
 			}
 		}
 	}
-	w.Render()
+	tbl.Render(os.Stdout)
 	return
+}
+
+func (c *LsCommand) parsePattern(pattern string) *regexp.Regexp {
+	if pattern == "" {
+		return nil
+	}
+	rp := strings.NewReplacer(".", "\\.", "*", ".*")
+	return regexp.MustCompile("^" + rp.Replace(pattern) + "$")
 }

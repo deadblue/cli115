@@ -6,7 +6,7 @@ Command Line Interface of 115 NetDisk Service.
 
 Thanks for these amazing projects:
 
-* https://github.com/olekukonko/tablewriter
+* https://github.com/mattn/go-runewidth
 * https://github.com/peterh/liner
 * https://github.com/skip2/go-qrcode
 * https://github.com/spf13/pflag
