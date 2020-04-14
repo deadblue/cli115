@@ -56,7 +56,7 @@ func (t *Terminal) handle(line string) (err error) {
 	pos := strings.IndexRune(line, ' ')
 	if pos > 0 {
 		name = strings.TrimSpace(line[:pos])
-		args = strings.TrimSpace(line[:pos+1])
+		args = strings.TrimSpace(line[pos+1:])
 	}
 	if c, ok := t.cmds[name]; !ok {
 		return errCommandNotExist
@@ -80,7 +80,7 @@ func (t *Terminal) Completer(line string) (choices []string) {
 	if pos > 0 {
 		phase = phaseArgs
 		np = strings.TrimSpace(line[:pos])
-		ap = strings.TrimSpace(line[:pos+1])
+		ap = strings.TrimSpace(line[pos+1:])
 	}
 	// fill choices
 	if phase == phaseName {
