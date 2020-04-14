@@ -78,7 +78,7 @@ func saveCookie(agent *elevengo.Agent, opts *Options) (err error) {
 		return
 	}
 	// try make directory
-	_ = os.MkdirAll(path.Dir(opts.CookieFile), 0644)
+	_ = os.MkdirAll(path.Dir(opts.CookieFile), 0755)
 	file, err := os.OpenFile(opts.CookieFile, os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
 		return
