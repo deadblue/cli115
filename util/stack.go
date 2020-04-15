@@ -1,4 +1,4 @@
-package core
+package util
 
 type _StackNode struct {
 	value interface{}

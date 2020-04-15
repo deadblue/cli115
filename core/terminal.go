@@ -1,10 +1,9 @@
-package cli115
+package core
 
 import (
 	"errors"
 	"fmt"
 	"github.com/peterh/liner"
-	"go.dead.blue/cli115/core"
 	"strings"
 )
 
@@ -21,7 +20,7 @@ const (
 
 type Terminal struct {
 	state *liner.State
-	ctx   *core.Context
+	ctx   *Context
 	cmds  map[string]Command
 }
 
@@ -110,4 +109,19 @@ func (t *Terminal) Completer(line string) (choices []string) {
 		choices = cc.Completer(t.ctx, ap)
 	}
 	return
+}
+
+func NewTerminal(ctx *Context) *Terminal {
+	// Create state
+	state := liner.NewLiner()
+	state.SetCtrlCAborts(true)
+	state.SetTabCompletionStyle(liner.TabPrints)
+	// Create terminal
+	t := &Terminal{
+		state: state,
+		ctx:   ctx,
+		cmds:  make(map[string]Command),
+	}
+	t.state.SetCompleter(t.Completer)
+	return t
 }

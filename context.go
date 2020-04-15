@@ -3,6 +3,7 @@ package cli115
 import (
 	"github.com/deadblue/elevengo"
 	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/util"
 )
 
 func createContext(agent *elevengo.Agent) (ctx *core.Context, err error) {
@@ -10,7 +11,7 @@ func createContext(agent *elevengo.Agent) (ctx *core.Context, err error) {
 		Alive: true,
 		Agent: agent,
 		User:  agent.User(),
-		Path:  core.NewStack(),
+		Path:  util.NewStack(),
 		Cache: make(map[string]*elevengo.File),
 	}
 	// Cache files under root

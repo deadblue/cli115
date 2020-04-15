@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/deadblue/elevengo"
+	"go.dead.blue/cli115/util"
 )
 
 type Dir struct {
@@ -17,7 +18,7 @@ type Context struct {
 	Agent *elevengo.Agent
 	User  *elevengo.UserInfo
 
-	Path  *Stack
+	Path  *util.Stack
 	Cache map[string]*elevengo.File
 }
 

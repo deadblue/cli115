@@ -1,8 +1,7 @@
-package core
+package util
 
 import (
 	"fmt"
-	"io"
 	"math"
 	"strconv"
 )
@@ -10,12 +9,6 @@ import (
 var (
 	sizeUnits = []string{"KB", "MB", "GB", "TB"}
 )
-
-func QuietlyClose(c io.Closer) {
-	if c != nil {
-		_ = c.Close()
-	}
-}
 
 func FormatSize(size int64) string {
 	if size < 1024 {

@@ -4,6 +4,7 @@ import (
 	"github.com/deadblue/elevengo"
 	"go.dead.blue/cli115/core"
 	"go.dead.blue/cli115/table"
+	"go.dead.blue/cli115/util"
 	"os"
 	"regexp"
 	"strings"
@@ -43,7 +44,7 @@ func (c *LsCommand) Exec(ctx *core.Context, args string) (err error) {
 				if file.IsDirectory {
 					tbl.AppendRow([]string{"<DIR>", file.Name})
 				} else {
-					tbl.AppendRow([]string{core.FormatSize(file.Size), file.Name})
+					tbl.AppendRow([]string{util.FormatSize(file.Size), file.Name})
 				}
 
 			}

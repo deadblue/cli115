@@ -1,8 +1,8 @@
 package cli115
 
 import (
-	"github.com/peterh/liner"
 	"go.dead.blue/cli115/command"
+	"go.dead.blue/cli115/core"
 )
 
 func Run() error {
@@ -14,7 +14,7 @@ func Run() error {
 	}
 }
 
-func createTerminal(opts *Options) (t *Terminal, err error) {
+func createTerminal(opts *Options) (t *core.Terminal, err error) {
 	agent, err := initAgent(opts)
 	if err != nil {
 		return
@@ -23,11 +23,7 @@ func createTerminal(opts *Options) (t *Terminal, err error) {
 	if err != nil {
 		return
 	}
-	t = &Terminal{
-		ctx:   ctx,
-		state: createLinerState(),
-	}
-	t.state.SetCompleter(t.Completer)
+	t = core.NewTerminal(ctx)
 	// Register commands
 	t.Register(
 		&command.ExitCommand{},
@@ -39,11 +35,4 @@ func createTerminal(opts *Options) (t *Terminal, err error) {
 		&command.PushCommand{},
 		&command.PlayCommand{})
 	return
-}
-
-func createLinerState() *liner.State {
-	state := liner.NewLiner()
-	state.SetCtrlCAborts(true)
-	state.SetTabCompletionStyle(liner.TabPrints)
-	return state
 }
