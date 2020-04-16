@@ -103,11 +103,14 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 		// We find the command, and make sure it supports CommandCompleter
 		buf := strings.Builder{}
 		buf.WriteString(head)
+		buf.WriteString(" ")
 		for i := 1; i < len(fields)-1; i++ {
-			buf.WriteString(" ")
-			buf.WriteString(util.InputFieldEscape(fields[i]))
+			if len(fields[i]) > 0 {
+				buf.WriteString(util.InputFieldEscape(fields[i]))
+				buf.WriteString(" ")
+			}
 		}
-		head, tail = buf.String(), ""
+		head, tail = name+" ", ""
 		choices = cc.Completer(t.ctx, fields[1:])
 	}
 	return

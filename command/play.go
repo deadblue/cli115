@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/util"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type PlayCommand struct {
@@ -41,4 +43,24 @@ func (c *PlayCommand) Exec(ctx *core.Context, args []string) (err error) {
 	cmd := exec.Command(exe, "-")
 	cmd.Stdin = bytes.NewReader(hls)
 	return cmd.Run()
+}
+
+func (c *PlayCommand) Completer(ctx *core.Context, args []string) (choices []string) {
+	choices = make([]string, 0)
+	// Get file prefix
+	prefix := ""
+	if len(args) != 0 {
+		prefix = args[len(args)-1]
+	}
+	// Search file from file cache
+	for name, file := range ctx.Cache {
+		// Skip directory
+		if file.IsDirectory {
+			continue
+		}
+		if len(prefix) == 0 || strings.HasPrefix(name, prefix) {
+			choices = append(choices, util.InputFieldEscape(name))
+		}
+	}
+	return
 }
