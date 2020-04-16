@@ -26,7 +26,7 @@ func initAgent(opts *Options) (agent *elevengo.Agent, err error) {
 	agent = elevengo.Default()
 	// try load cookie
 	if cr, err := loadCookie(opts); err == nil {
-		if err = agent.CredentialsImport(cr); err == nil {
+		if err = agent.CredentialImport(cr); err == nil {
 			return agent, nil
 		}
 	}
@@ -37,10 +37,10 @@ func initAgent(opts *Options) (agent *elevengo.Agent, err error) {
 	return
 }
 
-func loadCookie(opts *Options) (cr *elevengo.Credentials, err error) {
+func loadCookie(opts *Options) (cr *elevengo.Credential, err error) {
 	// make credentials by arguments
 	if opts.Uid != "" && opts.Cid != "" && opts.Seid != "" {
-		cr = &elevengo.Credentials{
+		cr = &elevengo.Credential{
 			UID:  opts.Uid,
 			CID:  opts.Cid,
 			SEID: opts.Seid,
@@ -56,7 +56,7 @@ func loadCookie(opts *Options) (cr *elevengo.Credentials, err error) {
 	// decode cookie
 	jd, data := json.NewDecoder(file), &CookieData{}
 	if err = jd.Decode(data); err == nil {
-		cr = &elevengo.Credentials{
+		cr = &elevengo.Credential{
 			UID:  data.Uid,
 			CID:  data.Cid,
 			SEID: data.Seid,
@@ -67,7 +67,7 @@ func loadCookie(opts *Options) (cr *elevengo.Credentials, err error) {
 
 func saveCookie(agent *elevengo.Agent, opts *Options) (err error) {
 	// export credentials
-	cr, err := agent.CredentialsExport()
+	cr, err := agent.CredentialExport()
 	if err != nil {
 		return
 	}
