@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/deadblue/elevengo"
 	"github.com/skip2/go-qrcode"
-	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/util"
 	"os"
 	"path"
 )
@@ -52,7 +52,7 @@ func loadCookie(opts *Options) (cr *elevengo.Credentials, err error) {
 	if err != nil {
 		return
 	}
-	defer core.QuietlyClose(file)
+	defer util.QuietlyClose(file)
 	// decode cookie
 	jd, data := json.NewDecoder(file), &CookieData{}
 	if err = jd.Decode(data); err == nil {
@@ -80,7 +80,7 @@ func saveCookie(agent *elevengo.Agent, opts *Options) (err error) {
 	if err != nil {
 		return
 	}
-	defer core.QuietlyClose(file)
+	defer util.QuietlyClose(file)
 	// write to file
 	je, data := json.NewEncoder(file), &CookieData{
 		Uid:  cr.UID,
