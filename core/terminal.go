@@ -14,11 +14,6 @@ var (
 
 type CompletePhase int
 
-const (
-	phaseName CompletePhase = iota
-	phaseArgs
-)
-
 type Terminal struct {
 	state *liner.State
 	ctx   *Context
@@ -55,7 +50,7 @@ func (t *Terminal) Run() (err error) {
 
 func (t *Terminal) handle(line string) (err error) {
 	// Split input by space
-	fields := util.SplitInput(line)
+	fields := util.InputSplit(line)
 	if len(fields) == 0 {
 		return
 	}
@@ -75,41 +70,45 @@ func (t *Terminal) handleErr(err error) {
 	}
 }
 
-func (t *Terminal) completer(line string) (choices []string) {
-	// parse line
-	np, ap, phase := line, "", phaseName
-	pos := strings.IndexRune(line, ' ')
-	if pos > 0 {
-		phase = phaseArgs
-		np = strings.TrimSpace(line[:pos])
-		ap = strings.TrimSpace(line[pos+1:])
-	}
-	// fill choices
-	if phase == phaseName {
-		// Search command names
-		choices = make([]string, 0)
+func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []string, tail string) {
+	// pre-init the result
+	head, choices, tail = line[:pos], make([]string, 0), line[pos:]
+	// parse input
+	fields := util.InputSplit(line[:pos])
+	if len(fields) == 1 {
+		// Here we need give choices for command names
+		head, tail = "", ""
 		for name, cmd := range t.cmds {
-			if !strings.HasPrefix(name, np) {
+			if len(fields[0]) > 0 && !strings.HasPrefix(name, fields[0]) {
 				continue
 			}
 			if cmd.HasArgs() {
+				// Append a space to command which has arguments
 				choices = append(choices, name+" ")
 			} else {
 				choices = append(choices, name)
 			}
 		}
-	} else if phase == phaseArgs {
-		// Find command
-		cmd, ok := t.cmds[np]
+	} else {
+		// Here we need give choices for command's argument
+		name := fields[0]
+		cmd, ok := t.cmds[name]
 		if !ok {
 			return
 		}
-		// Check whether command supports completer
 		cc, ok := cmd.(CommandCompleter)
 		if !ok {
 			return
 		}
-		choices = cc.Completer(t.ctx, ap)
+		// We find the command, and make sure it supports CommandCompleter
+		buf := strings.Builder{}
+		buf.WriteString(head)
+		for i := 1; i < len(fields)-1; i++ {
+			buf.WriteString(" ")
+			buf.WriteString(util.InputFieldEscape(fields[i]))
+		}
+		head, tail = buf.String(), ""
+		choices = cc.Completer(t.ctx, fields[1:])
 	}
 	return
 }
@@ -125,6 +124,6 @@ func NewTerminal(ctx *Context) *Terminal {
 		ctx:   ctx,
 		cmds:  make(map[string]Command),
 	}
-	t.state.SetCompleter(t.completer)
+	t.state.SetWordCompleter(t.wordCompleter)
 	return t
 }

@@ -9,7 +9,7 @@ const (
 	charEscape = '\\'
 )
 
-func SplitInput(input string) (fields []string) {
+func InputSplit(input string) (fields []string) {
 	fields = make([]string, 0)
 	buf := &strings.Builder{}
 	inEscape := false
@@ -34,4 +34,15 @@ func SplitInput(input string) (fields []string) {
 	}
 	fields = append(fields, buf.String())
 	return
+}
+
+func InputFieldEscape(field string) string {
+	buf := strings.Builder{}
+	for _, ch := range field {
+		if ch == charEscape || ch == charSpace {
+			buf.WriteRune(charEscape)
+		}
+		buf.WriteRune(ch)
+	}
+	return buf.String()
 }

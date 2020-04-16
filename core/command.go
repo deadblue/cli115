@@ -13,8 +13,10 @@ type Command interface {
 }
 
 /*
-CommandCompleter is an additional interface to indicate if command supoorts tab complete.
+CommandCompleter is an additional interface to indicate if command supoorts completer.
 */
 type CommandCompleter interface {
-	Completer(ctx *Context, args string) []string
+
+	// The cursor is at the end of the last args, command SHOULD only give choices for it.
+	Completer(ctx *Context, args []string) (choices []string)
 }
