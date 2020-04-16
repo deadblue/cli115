@@ -17,7 +17,7 @@ func (c *PwdCommand) Name() string {
 	return "pwd"
 }
 
-func (c *PwdCommand) Exec(ctx *core.Context, args string) (err error) {
+func (c *PwdCommand) Exec(ctx *core.Context, _ []string) (err error) {
 	sb := strings.Builder{}
 	sb.WriteString("/")
 	for i, v := range ctx.Path.Values() {

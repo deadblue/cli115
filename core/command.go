@@ -9,7 +9,7 @@ type Command interface {
 	// Indicate whether the command has arguments.
 	HasArgs() bool
 	// Execute the command.
-	Exec(ctx *Context, args string) (err error)
+	Exec(ctx *Context, args []string) (err error)
 }
 
 /*

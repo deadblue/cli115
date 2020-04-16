@@ -15,7 +15,7 @@ func (c *ClearCommand) Name() string {
 	return "clear"
 }
 
-func (c *ClearCommand) Exec(ctx *core.Context, _ string) (err error) {
+func (c *ClearCommand) Exec(ctx *core.Context, _ []string) (err error) {
 	fmt.Print("\x1b[H\x1b[2J")
 	return nil
 }

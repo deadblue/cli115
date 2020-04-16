@@ -2,7 +2,7 @@ package command
 
 import (
 	"go.dead.blue/cli115/core"
-	"strings"
+	"log"
 )
 
 type CdCommand struct {
@@ -13,17 +13,17 @@ func (c *CdCommand) Name() string {
 	return "cd"
 }
 
-func (c *CdCommand) Exec(ctx *core.Context, args string) (err error) {
-	// TODO
-	return nil
-}
-
-func (c *CdCommand) parsePath(ctx *core.Context, target string) (abs bool, dirs []string) {
-	abs = target[0] == '/'
-	for _, dir := range strings.Split(target, "/") {
-		if dir == "" || dir == "." {
-			continue
+func (c *CdCommand) Exec(ctx *core.Context, args []string) (err error) {
+	rootId := "0"
+	if len(args) > 0 {
+		target := args[0]
+		if target[0] != '/' && !ctx.Path.IsEmpty() {
+			// target is a relative path, search from current dir
+			root := ctx.Path.Top().(*core.Dir)
+			rootId = root.Id
 		}
 	}
-	return
+	// TODO: parse path
+	log.Printf("Search from => %s", rootId)
+	return nil
 }

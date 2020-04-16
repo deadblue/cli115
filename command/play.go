@@ -16,8 +16,8 @@ func (c *PlayCommand) Name() string {
 	return "play"
 }
 
-func (c *PlayCommand) Exec(ctx *core.Context, args string) (err error) {
-	if args == "" {
+func (c *PlayCommand) Exec(ctx *core.Context, args []string) (err error) {
+	if len(args) == 0 {
 		return errors.New("no file to play")
 	}
 	// search mpv
@@ -26,7 +26,7 @@ func (c *PlayCommand) Exec(ctx *core.Context, args string) (err error) {
 		return errors.New("can not find mpv executable file")
 	}
 	// search file
-	file, ok := ctx.Cache[args]
+	file, ok := ctx.Cache[args[0]]
 	if !ok {
 		return os.ErrNotExist
 	}

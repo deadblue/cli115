@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/peterh/liner"
+	"go.dead.blue/cli115/util"
 	"strings"
 )
 
@@ -24,6 +25,9 @@ type Terminal struct {
 	cmds  map[string]Command
 }
 
+/*
+Register one or more commands into terminal.
+*/
 func (t *Terminal) Register(cmds ...Command) {
 	if t.cmds == nil {
 		t.cmds = make(map[string]Command)
@@ -42,7 +46,6 @@ func (t *Terminal) Run() (err error) {
 				t.handleErr(err)
 			}
 		} else {
-			input = strings.TrimSpace(input)
 			t.handleErr(t.handle(input))
 			t.state.AppendHistory(input)
 		}
@@ -51,12 +54,12 @@ func (t *Terminal) Run() (err error) {
 }
 
 func (t *Terminal) handle(line string) (err error) {
-	name, args := line, ""
-	pos := strings.IndexRune(line, ' ')
-	if pos > 0 {
-		name = strings.TrimSpace(line[:pos])
-		args = strings.TrimSpace(line[pos+1:])
+	// Split input by space
+	fields := util.SplitInput(line)
+	if len(fields) == 0 {
+		return
 	}
+	name, args := fields[0], fields[1:]
 	if c, ok := t.cmds[name]; !ok {
 		return errCommandNotExist
 	} else {
@@ -72,7 +75,7 @@ func (t *Terminal) handleErr(err error) {
 	}
 }
 
-func (t *Terminal) Completer(line string) (choices []string) {
+func (t *Terminal) completer(line string) (choices []string) {
 	// parse line
 	np, ap, phase := line, "", phaseName
 	pos := strings.IndexRune(line, ' ')
@@ -122,6 +125,6 @@ func NewTerminal(ctx *Context) *Terminal {
 		ctx:   ctx,
 		cmds:  make(map[string]Command),
 	}
-	t.state.SetCompleter(t.Completer)
+	t.state.SetCompleter(t.completer)
 	return t
 }

@@ -18,12 +18,16 @@ func (c *LsCommand) Name() string {
 	return "ls"
 }
 
-func (c *LsCommand) Exec(ctx *core.Context, args string) (err error) {
+func (c *LsCommand) Exec(ctx *core.Context, args []string) (err error) {
 	dirId := "0"
 	if !ctx.Path.IsEmpty() {
 		dirId = (ctx.Path.Top()).(string)
 	}
-	reg := c.parsePattern(args)
+	var filter *regexp.Regexp
+	if len(args) > 0 {
+		filter = c.parsePattern(args[0])
+	}
+
 	// Clear cache, we will update it
 	ctx.Cache = make(map[string]*elevengo.File)
 	// Print file list
@@ -38,7 +42,7 @@ func (c *LsCommand) Exec(ctx *core.Context, args string) (err error) {
 			for _, file := range files {
 				// Update cache
 				ctx.Cache[file.Name] = file
-				if reg != nil && !reg.MatchString(file.Name) {
+				if filter != nil && !filter.MatchString(file.Name) {
 					continue
 				}
 				if file.IsDirectory {

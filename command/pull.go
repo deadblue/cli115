@@ -12,6 +12,6 @@ func (c *PullCommand) Name() string {
 	return "pull"
 }
 
-func (c *PullCommand) Exec(ctx *core.Context, args string) (err error) {
+func (c *PullCommand) Exec(ctx *core.Context, args []string) (err error) {
 	return nil
 }

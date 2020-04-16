@@ -10,7 +10,7 @@ func (c *ExitCommand) Name() string {
 	return "exit"
 }
 
-func (c *ExitCommand) Exec(ctx *core.Context, args string) (err error) {
+func (c *ExitCommand) Exec(ctx *core.Context, _ []string) (err error) {
 	ctx.Alive = false
 	return nil
 }
