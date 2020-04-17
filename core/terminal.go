@@ -96,22 +96,27 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 		if !ok {
 			return
 		}
-		cc, ok := cmd.(CommandCompleter)
+		ac, ok := cmd.(ArgCompleter)
 		if !ok {
 			return
 		}
-		// We find the command, and make sure it supports CommandCompleter
+		// Now we find the command, and make sure it supports ArgCompleter.
+		// Build the "head"
+		fieldCount := len(fields)
 		buf := strings.Builder{}
-		buf.WriteString(head)
+		buf.WriteString(name)
 		buf.WriteString(" ")
-		for i := 1; i < len(fields)-1; i++ {
-			if len(fields[i]) > 0 {
-				buf.WriteString(util.InputFieldEscape(fields[i]))
+		for i := 1; i < fieldCount-1; i++ {
+			arg := fields[i]
+			if len(arg) > 0 {
+				buf.WriteString(util.InputFieldEscape(arg))
 				buf.WriteString(" ")
 			}
 		}
-		head, tail = name+" ", ""
-		choices = cc.Completer(t.ctx, fields[1:])
+		head, tail = buf.String(), ""
+		// Find last arg and call ArgCompleter.Completer
+		index, lastArg := fieldCount-2, fields[fieldCount-1]
+		choices = ac.Completer(t.ctx, index, lastArg)
 	}
 	return
 }

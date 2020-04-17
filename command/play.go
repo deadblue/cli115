@@ -45,12 +45,11 @@ func (c *PlayCommand) Exec(ctx *core.Context, args []string) (err error) {
 	return cmd.Run()
 }
 
-func (c *PlayCommand) Completer(ctx *core.Context, args []string) (choices []string) {
+func (c *PlayCommand) Completer(ctx *core.Context, index int, prefix string) (choices []string) {
 	choices = make([]string, 0)
-	// Get file prefix
-	prefix := ""
-	if len(args) != 0 {
-		prefix = args[len(args)-1]
+	// "play" command only handle first argument
+	if index > 0 {
+		return
 	}
 	// Search file from file cache
 	for name, file := range ctx.Cache {

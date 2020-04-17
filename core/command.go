@@ -13,10 +13,14 @@ type Command interface {
 }
 
 /*
-CommandCompleter is an additional interface to indicate if command supoorts completer.
+ArgCompleter interface is to indicate whether command supoorts argument completer.
 */
-type CommandCompleter interface {
+type ArgCompleter interface {
 
-	// The cursor is at the end of the last args, command SHOULD only give choices for it.
-	Completer(ctx *Context, args []string) (choices []string)
+	// To get complete choices of an argument.
+	// Parameter:
+	//   ctx:    Terminal context.
+	//   index:  The index of the argument that need to be compelte.
+	//   prefix: The prefix of the argument.
+	Completer(ctx *Context, index int, prefix string) (choices []string)
 }
