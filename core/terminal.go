@@ -12,12 +12,11 @@ var (
 	errCommandNotExist = errors.New("no such command")
 )
 
-type CompletePhase int
-
 type Terminal struct {
 	state *liner.State
-	ctx   *Context
-	cmds  map[string]Command
+
+	ctx  Context
+	cmds map[string]Command
 }
 
 /*
@@ -33,8 +32,8 @@ func (t *Terminal) Register(cmds ...Command) {
 }
 
 func (t *Terminal) Run() (err error) {
-	for t.ctx.Alive {
-		if input, err := t.state.Prompt(t.ctx.PromptString()); err != nil {
+	for t.ctx.Alive() {
+		if input, err := t.state.Prompt(t.ctx.Prompt()); err != nil {
 			if err == liner.ErrPromptAborted {
 				return err
 			} else {
@@ -121,7 +120,7 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 	return
 }
 
-func NewTerminal(ctx *Context) *Terminal {
+func NewTerminal(ctx Context) *Terminal {
 	// Create state
 	state := liner.NewLiner()
 	state.SetCtrlCAborts(true)

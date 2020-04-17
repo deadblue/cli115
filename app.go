@@ -2,6 +2,7 @@ package cli115
 
 import (
 	"go.dead.blue/cli115/command"
+	"go.dead.blue/cli115/context"
 	"go.dead.blue/cli115/core"
 )
 
@@ -19,20 +20,20 @@ func createTerminal(opts *Options) (t *core.Terminal, err error) {
 	if err != nil {
 		return
 	}
-	ctx, err := createContext(agent)
+	ctx, err := context.New(agent)
 	if err != nil {
 		return
 	}
 	t = core.NewTerminal(ctx)
 	// Register commands
 	t.Register(
-		&command.ExitCommand{},
-		&command.ClearCommand{},
-		&command.CdCommand{},
-		&command.PwdCommand{},
-		&command.LsCommand{},
-		&command.PullCommand{},
-		&command.PushCommand{},
-		&command.PlayCommand{})
+		command.Wrap(&command.CdCommand{}),
+		command.Wrap(&command.ClearCommand{}),
+		command.Wrap(&command.ExitCommand{}),
+		command.Wrap(&command.LsCommand{}),
+		command.Wrap(&command.PlayCommand{}),
+		command.Wrap(&command.PullCommand{}),
+		command.Wrap(&command.PushCommand{}),
+		command.Wrap(&command.PwdCommand{}))
 	return
 }

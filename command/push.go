@@ -1,7 +1,7 @@
 package command
 
 import (
-	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/context"
 )
 
 type PushCommand struct {
@@ -12,6 +12,6 @@ func (c *PushCommand) Name() string {
 	return "push"
 }
 
-func (c *PushCommand) Exec(ctx *core.Context, args []string) (err error) {
+func (c *PushCommand) Exec(ctx *context.Impl, args []string) (err error) {
 	return nil
 }

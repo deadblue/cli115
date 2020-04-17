@@ -1,6 +1,8 @@
 package command
 
-import "go.dead.blue/cli115/core"
+import (
+	"go.dead.blue/cli115/context"
+)
 
 type ExitCommand struct {
 	NoArgsCommand
@@ -10,7 +12,7 @@ func (c *ExitCommand) Name() string {
 	return "exit"
 }
 
-func (c *ExitCommand) Exec(ctx *core.Context, _ []string) (err error) {
-	ctx.Alive = false
+func (c *ExitCommand) Exec(ctx *context.Impl, _ []string) error {
+	ctx.Die()
 	return nil
 }

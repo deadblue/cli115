@@ -9,7 +9,7 @@ type Command interface {
 	// Indicate whether the command has arguments.
 	HasArgs() bool
 	// Execute the command.
-	Exec(ctx *Context, args []string) (err error)
+	Exec(ctx Context, args []string) (err error)
 }
 
 /*
@@ -22,5 +22,5 @@ type ArgCompleter interface {
 	//   ctx:    Terminal context.
 	//   index:  The index of the argument that need to be compelte.
 	//   prefix: The prefix of the argument.
-	Completer(ctx *Context, index int, prefix string) (choices []string)
+	Completer(ctx Context, index int, prefix string) (choices []string)
 }

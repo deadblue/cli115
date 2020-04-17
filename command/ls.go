@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/deadblue/elevengo"
-	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/context"
 	"go.dead.blue/cli115/table"
 	"go.dead.blue/cli115/util"
 	"os"
@@ -18,18 +18,16 @@ func (c *LsCommand) Name() string {
 	return "ls"
 }
 
-func (c *LsCommand) Exec(ctx *core.Context, args []string) (err error) {
-	dirId := "0"
-	if !ctx.Path.IsEmpty() {
-		dirId = (ctx.Path.Top()).(string)
-	}
+func (c *LsCommand) Exec(ctx *context.Impl, args []string) (err error) {
+	dirId := ctx.Curr.Id
+
 	var filter *regexp.Regexp
 	if len(args) > 0 {
 		filter = c.parsePattern(args[0])
 	}
 
 	// Clear cache, we will update it
-	ctx.Cache = make(map[string]*elevengo.File)
+	ctx.Files = make(map[string]*elevengo.File)
 	// Print file list
 	tbl := table.New().
 		AddColumn("Size", table.AlignRight).
@@ -41,7 +39,7 @@ func (c *LsCommand) Exec(ctx *core.Context, args []string) (err error) {
 		} else {
 			for _, file := range files {
 				// Update cache
-				ctx.Cache[file.Name] = file
+				ctx.Files[file.Name] = file
 				if filter != nil && !filter.MatchString(file.Name) {
 					continue
 				}

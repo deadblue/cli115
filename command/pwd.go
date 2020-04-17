@@ -2,13 +2,9 @@ package command
 
 import (
 	"fmt"
-	"go.dead.blue/cli115/core"
-	"strings"
+	"go.dead.blue/cli115/context"
 )
 
-/*
-"pwd" command print full path of current directory.
-*/
 type PwdCommand struct {
 	NoArgsCommand
 }
@@ -17,19 +13,7 @@ func (c *PwdCommand) Name() string {
 	return "pwd"
 }
 
-func (c *PwdCommand) Exec(ctx *core.Context, _ []string) (err error) {
-	sb := strings.Builder{}
-	sb.WriteString("/")
-	for i, v := range ctx.Path.Values() {
-		dir, ok := v.(*core.Dir)
-		if !ok {
-			continue
-		}
-		if i > 0 {
-			sb.WriteString("/")
-		}
-		sb.WriteString(dir.Name)
-	}
-	fmt.Println(sb.String())
+func (c *PwdCommand) Exec(ctx *context.Impl, _ []string) error {
+	fmt.Println(ctx.Curr.Path("/"))
 	return nil
 }
