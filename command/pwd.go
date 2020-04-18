@@ -13,7 +13,7 @@ func (c *PwdCommand) Name() string {
 	return "pwd"
 }
 
-func (c *PwdCommand) Exec(ctx *context.Impl, _ []string) error {
+func (c *PwdCommand) ImplExec(ctx *context.Impl, _ []string) error {
 	fmt.Println(ctx.Curr.Path("/"))
 	return nil
 }

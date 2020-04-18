@@ -18,7 +18,7 @@ func (c *LsCommand) Name() string {
 	return "ls"
 }
 
-func (c *LsCommand) Exec(ctx *context.Impl, args []string) (err error) {
+func (c *LsCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	dirId := ctx.Curr.Id
 
 	var filter *regexp.Regexp

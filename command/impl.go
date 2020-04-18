@@ -16,39 +16,38 @@ type Impl interface {
 	// Does the command have arguments.
 	HasArgs() bool
 	// Execute command.
-	Exec(ctx *context.Impl, args []string) error
+	ImplExec(ctx *context.Impl, args []string) error
 }
 
 type ImplCompleter interface {
-	Completer(ctx *context.Impl, index int, prefix string) []string
+	ImplCplt(ctx *context.Impl, index int, prefix string) []string
 }
 
 type wrapper struct {
 	Impl
 }
 
-type wraperEx struct {
-	wrapper
-}
-
 // Wrap the Exec method, convert the ctx into the type we want.
 func (w *wrapper) Exec(ctx core.Context, args []string) error {
 	if ictx, ok := ctx.(*context.Impl); ok {
-		return w.Impl.Exec(ictx, args)
+		return w.Impl.ImplExec(ictx, args)
 	} else {
 		return errIllegalContext
 	}
 }
 
-// Always implement ArgCompleter.
+type wraperEx struct {
+	wrapper
+}
+
 func (we *wraperEx) Completer(ctx core.Context, index int, prefix string) []string {
 	if ictx, ok := ctx.(*context.Impl); !ok {
 		// return empty choice for illegal context
 		return []string{}
 	} else {
-		// We are sure that Impl in wrapperEx always implements ImplCompleter
+		// We are sure that Impl in wrapperEx always implements ArgCompleter
 		ic, _ := we.Impl.(ImplCompleter)
-		return ic.Completer(ictx, index, prefix)
+		return ic.ImplCplt(ictx, index, prefix)
 	}
 }
 

@@ -12,7 +12,7 @@ func (c *ExitCommand) Name() string {
 	return "exit"
 }
 
-func (c *ExitCommand) Exec(ctx *context.Impl, _ []string) error {
+func (c *ExitCommand) ImplExec(ctx *context.Impl, _ []string) error {
 	ctx.Die()
 	return nil
 }

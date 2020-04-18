@@ -18,7 +18,7 @@ func (c *PlayCommand) Name() string {
 	return "play"
 }
 
-func (c *PlayCommand) Exec(ctx *context.Impl, args []string) (err error) {
+func (c *PlayCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	if len(args) == 0 {
 		return errors.New("no file to play")
 	}
@@ -45,7 +45,7 @@ func (c *PlayCommand) Exec(ctx *context.Impl, args []string) (err error) {
 	return cmd.Run()
 }
 
-func (c *PlayCommand) Completer(ctx *context.Impl, index int, prefix string) (choices []string) {
+func (c *PlayCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (choices []string) {
 	choices = make([]string, 0)
 	// "play" command only handle first argument
 	if index > 0 {
