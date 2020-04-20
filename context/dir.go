@@ -20,8 +20,7 @@ type DirNode struct {
 
 // Return the full path of the node
 func (n *DirNode) Path(sep string) string {
-	depth := n.Depth
-	buf := make([]string, n.Depth+1)
+	buf, depth := make([]string, n.Depth+1), n.Depth
 	for node := n; node != nil; node = node.Parent {
 		buf[depth] = node.Name
 		depth -= 1
@@ -29,7 +28,11 @@ func (n *DirNode) Path(sep string) string {
 	if sep == "" {
 		sep = "/"
 	}
-	return strings.Join(buf, sep)
+	path := strings.Join(buf, sep)
+	if path == "" {
+		path = "/"
+	}
+	return path
 }
 
 // Append children under current node.
@@ -42,6 +45,14 @@ func (n *DirNode) Append(id, name string) *DirNode {
 		n.Time = time.Now()
 	}
 	return n
+}
+
+func (n *DirNode) AppendTo(parent *DirNode) {
+	if parent == nil {
+		return
+	}
+	n.Parent = parent
+	n.Depth = parent.Depth + 1
 }
 
 func MakeNode(id, name string) *DirNode {
