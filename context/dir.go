@@ -13,6 +13,9 @@ type DirNode struct {
 	// Node update time
 	Time time.Time
 
+	// Is children cached
+	IsCached bool
+
 	Depth    int
 	Parent   *DirNode
 	Children map[string]*DirNode
@@ -53,6 +56,7 @@ func (n *DirNode) AppendTo(parent *DirNode) {
 	}
 	n.Parent = parent
 	n.Depth = parent.Depth + 1
+	parent.Children[n.Name] = n
 }
 
 func MakeNode(id, name string) *DirNode {
@@ -64,5 +68,6 @@ func MakeNode(id, name string) *DirNode {
 		Depth:    0,
 		Parent:   nil,
 		Children: make(map[string]*DirNode),
+		IsCached: false,
 	}
 }
