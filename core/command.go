@@ -22,5 +22,8 @@ type ArgCompleter interface {
 	//   ctx:    Terminal context.
 	//   index:  The index of the argument that need to be compelte.
 	//   prefix: The prefix of the argument.
-	Completer(ctx Context, index int, prefix string) (choices []string)
+	// Return:
+	//   head:    Head of choice.
+	//   choices: Available choices.
+	Completer(ctx Context, index int, prefix string) (head string, choices []string)
 }

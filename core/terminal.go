@@ -115,7 +115,11 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 		head, tail = buf.String(), ""
 		// Find last arg and call ArgCompleter.Completer
 		index, lastArg := fieldCount-2, fields[fieldCount-1]
-		choices = ac.Completer(t.ctx, index, lastArg)
+		var argHead string
+		argHead, choices = ac.Completer(t.ctx, index, lastArg)
+		if argHead != "" {
+			head = fmt.Sprintf("%s%s", head, argHead)
+		}
 	}
 	return
 }

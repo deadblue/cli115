@@ -20,7 +20,7 @@ type Impl interface {
 }
 
 type ImplCompleter interface {
-	ImplCplt(ctx *context.Impl, index int, prefix string) []string
+	ImplCplt(ctx *context.Impl, index int, prefix string) (string, []string)
 }
 
 type wrapper struct {
@@ -40,10 +40,10 @@ type wraperEx struct {
 	wrapper
 }
 
-func (we *wraperEx) Completer(ctx core.Context, index int, prefix string) []string {
+func (we *wraperEx) Completer(ctx core.Context, index int, prefix string) (string, []string) {
 	if ictx, ok := ctx.(*context.Impl); !ok {
 		// return empty choice for illegal context
-		return []string{}
+		return "", []string{}
 	} else {
 		// We are sure that Impl in wrapperEx always implements ArgCompleter
 		ic, _ := we.Impl.(ImplCompleter)
