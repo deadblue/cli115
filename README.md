@@ -1,6 +1,6 @@
 # Cli115
 
-Command Line Interface of 115 NetDisk Service.
+Command Line Interface of 115 Cloud Storage Service.
 
 ## Dependecies
 

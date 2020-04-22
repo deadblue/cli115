@@ -16,70 +16,71 @@ func (c *CdCommand) Name() string {
 }
 
 func (c *CdCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
-	// Do nothing by default
-	target := "."
-	if len(args) > 0 {
-		target = args[0]
+	if len(args) == 0 {
+		return
 	}
-	if target == "/" {
-		// Go to root
-		ctx.Curr = ctx.Root
-	} else if target == ".." {
-		// Go to parent dir
-		if ctx.Curr != ctx.Root {
-			ctx.Curr = ctx.Curr.Parent
-		}
+	dir := c.locate(ctx, args[0])
+	if dir != nil {
+		ctx.Curr = dir
 	} else {
-		// Search target dir
-		var targetDir = (*elevengo.File)(nil)
-		for cur := elevengo.FileCursor(); cur.HasMore() && targetDir == nil; cur.Next() {
-			if files, err := ctx.Agent.FileList(ctx.Curr.Id, cur); err != nil {
-				break
-			} else {
-				for _, file := range files {
-					if file.IsDirectory && target == file.Name {
-						targetDir = file
-						break
-					}
-				}
-			}
-		}
-		// Go to dir
-		if targetDir != nil {
-			node := context.MakeNode(targetDir.FileId, targetDir.Name)
-			node.AppendTo(ctx.Curr)
-			ctx.Curr = node
-		} else {
-			err = errors.New("no such dir")
-		}
+		return errors.New("no such dir")
 	}
 	return
 }
 
-func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (choices []string) {
+func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head string, choices []string) {
 	choices = make([]string, 0)
 	// Only handle first arguments
 	if index > 0 {
 		return
 	}
-	//
-	if strings.HasPrefix(prefix, "/") || strings.HasPrefix(prefix, "..") {
-		return
+	// TODO: use c.locate()
+	return
+}
+
+func (c *CdCommand) locate(ctx *context.Impl, path string) (dir *context.DirNode) {
+	dirs := strings.Split(path, "/")
+	depth, curr, start := len(dirs), ctx.Curr, 0
+	if depth > 1 && dirs[0] == "" {
+		// Starts from root
+		curr = ctx.Root
+		start = 1
 	}
-	// Search directories under current dir
+	//
+	for i := start; i < depth; i += 1 {
+		if !curr.IsCached {
+			c.fillCache(curr, ctx.Agent)
+		}
+		dirName := dirs[i]
+		if dirName == "." || dirName == "" {
+			continue
+		} else if dirName == ".." {
+			if curr != ctx.Root {
+				curr = curr.Parent
+			}
+		} else {
+			curr = curr.Children[dirName]
+		}
+		if curr == nil {
+			break
+		}
+	}
+	return curr
+}
+
+func (c *CdCommand) fillCache(dir *context.DirNode, agent *elevengo.Agent) {
 	for cur := elevengo.FileCursor(); cur.HasMore(); cur.Next() {
-		if files, err := ctx.Agent.FileList(ctx.Curr.Id, cur); err != nil {
+		if files, err := agent.FileList(dir.Id, cur); err != nil {
 			break
 		} else {
 			for _, file := range files {
 				if !file.IsDirectory {
 					continue
 				}
-				if prefix == "" || strings.HasPrefix(file.Name, prefix) {
-					choices = append(choices, file.Name)
-				}
+				node := context.MakeNode(file.FileId, file.Name)
+				node.AppendTo(dir)
 			}
 		}
 	}
-	return
+	dir.IsCached = true
 }
