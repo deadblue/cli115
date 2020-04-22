@@ -35,7 +35,7 @@ func (t *Terminal) Run() (err error) {
 	for t.ctx.Alive() {
 		if input, err := t.state.Prompt(t.ctx.Prompt()); err != nil {
 			if err == liner.ErrPromptAborted {
-				return err
+				break
 			} else {
 				t.handleErr(err)
 			}
