@@ -2,7 +2,6 @@ package context
 
 import (
 	"strings"
-	"time"
 )
 
 type DirNode struct {
@@ -10,8 +9,6 @@ type DirNode struct {
 	Id string
 	// Display name
 	Name string
-	// Node update time
-	Time time.Time
 
 	// Is children cached
 	IsCached bool
@@ -38,32 +35,21 @@ func (n *DirNode) Path(sep string) string {
 	return path
 }
 
-// Append children under current node.
+// Append child to this node, do not replace exists entry.
 func (n *DirNode) Append(id, name string) *DirNode {
 	if _, ok := n.Children[name]; !ok {
 		node := MakeNode(id, name)
 		node.Parent = n
 		node.Depth = n.Depth + 1
 		n.Children[name] = node
-		n.Time = time.Now()
 	}
 	return n
-}
-
-func (n *DirNode) AppendTo(parent *DirNode) {
-	if parent == nil {
-		return
-	}
-	n.Parent = parent
-	n.Depth = parent.Depth + 1
-	parent.Children[n.Name] = n
 }
 
 func MakeNode(id, name string) *DirNode {
 	return &DirNode{
 		Id:   id,
 		Name: name,
-		Time: time.Now(),
 
 		Depth:    0,
 		Parent:   nil,
