@@ -7,6 +7,8 @@ func (e Error) Error() string {
 }
 
 var (
+	errArgsNotEnough Error = "Arguments not enough"
+
 	errDirNotExist Error = "No such directory"
 
 	errFileNotExist Error = "No such file"

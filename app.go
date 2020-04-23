@@ -32,7 +32,7 @@ func createTerminal(opts *Options) (t *core.Terminal, err error) {
 		command.Wrap(&command.ExitCommand{}),
 		command.Wrap(&command.LsCommand{}),
 		command.Wrap(&command.PlayCommand{}),
-		command.Wrap(&command.PullCommand{}),
+		command.Wrap(&command.DlCommand{}),
 		command.Wrap(&command.PushCommand{}),
 		command.Wrap(&command.PwdCommand{}))
 	return
