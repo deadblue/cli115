@@ -34,7 +34,26 @@ func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head 
 	if index > 0 {
 		return
 	}
-	// TODO: use c.locate()
+	head, last, curr := "", prefix, ctx.Curr
+	pos := strings.LastIndex(prefix, "/")
+	if pos == 0 {
+		curr = ctx.Root
+	} else if pos > 0 {
+		head = prefix[:pos+1]
+		last = prefix[pos+1:]
+		curr = c.locate(ctx, head)
+	}
+	if curr == nil {
+		return
+	}
+	if !curr.IsCached {
+		c.fillCache(curr, ctx.Agent)
+	}
+	for name := range curr.Children {
+		if last == "" || strings.HasPrefix(name, last) {
+			choices = append(choices, name+"/")
+		}
+	}
 	return
 }
 
