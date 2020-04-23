@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/peterh/liner"
-	"go.dead.blue/cli115/util"
 	"strings"
 )
 
@@ -49,7 +48,7 @@ func (t *Terminal) Run() (err error) {
 
 func (t *Terminal) handle(line string) (err error) {
 	// Split input by space
-	fields := util.InputSplit(line)
+	fields := InputSplit(line)
 	if len(fields) == 0 {
 		return
 	}
@@ -73,7 +72,7 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 	// pre-init the result
 	head, choices, tail = line[:pos], make([]string, 0), line[pos:]
 	// parse input
-	fields := util.InputSplit(line[:pos])
+	fields := InputSplit(line[:pos])
 	if len(fields) == 1 {
 		// Here we need give choices for command names
 		head, tail = "", ""
@@ -108,7 +107,7 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 		for i := 1; i < fieldCount-1; i++ {
 			arg := fields[i]
 			if len(arg) > 0 {
-				buf.WriteString(util.InputFieldEscape(arg))
+				buf.WriteString(InputEscape(arg))
 				buf.WriteString(" ")
 			}
 		}
@@ -119,6 +118,10 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 		argHead, choices = ac.Completer(t.ctx, index, lastArg)
 		if argHead != "" {
 			head = fmt.Sprintf("%s%s", head, argHead)
+		}
+		// Escape choice
+		for index, choice := range choices {
+			choices[index] = InputEscape(choice)
 		}
 	}
 	return
