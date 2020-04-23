@@ -18,7 +18,7 @@ func (c *PlayCommand) Name() string {
 
 func (c *PlayCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	if len(args) == 0 {
-		return errFileNotExist
+		return errArgsNotEnough
 	}
 	// search mpv
 	exe, err := exec.LookPath("mpv")
@@ -41,6 +41,7 @@ func (c *PlayCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	cmd := exec.Command(exe,
 		fmt.Sprintf("--title=%s", file.Name), "-")
 	cmd.Stdin = bytes.NewReader(hls)
+	// TODO: handle interrupt signal.
 	return cmd.Run()
 }
 
