@@ -2,10 +2,8 @@ package command
 
 import (
 	"bytes"
-	"errors"
 	"go.dead.blue/cli115/context"
 	"go.dead.blue/cli115/util"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -20,20 +18,20 @@ func (c *PlayCommand) Name() string {
 
 func (c *PlayCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	if len(args) == 0 {
-		return errors.New("no file to play")
+		return errFileNotExist
 	}
 	// search mpv
 	exe, err := exec.LookPath("mpv")
 	if err != nil {
-		return errors.New("can not find mpv executable file")
+		return errMpvNotExist
 	}
 	// search file
 	file, ok := ctx.Files[args[0]]
 	if !ok {
-		return os.ErrNotExist
+		return errFileNotExist
 	}
 	if !file.IsFile {
-		return errors.New("not a regular file")
+		return errNotFile
 	}
 	// play video via mpv
 	hls, err := ctx.Agent.VideoHlsContent(file.PickCode)

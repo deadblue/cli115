@@ -1,7 +1,6 @@
 package command
 
 import (
-	"errors"
 	"github.com/deadblue/elevengo"
 	"go.dead.blue/cli115/context"
 	"strings"
@@ -23,7 +22,7 @@ func (c *CdCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	if dir != nil {
 		ctx.Curr = dir
 	} else {
-		return errors.New("no such dir")
+		return errDirNotExist
 	}
 	return
 }
@@ -72,8 +71,10 @@ func (c *CdCommand) locate(ctx *context.Impl, path string) (dir *context.DirNode
 		}
 		dirName := dirs[i]
 		if dirName == "." || dirName == "" {
+			// "." means current dir
 			continue
 		} else if dirName == ".." {
+			// ".." means upstairs dir
 			if curr != ctx.Root {
 				curr = curr.Parent
 			}
@@ -96,8 +97,7 @@ func (c *CdCommand) fillCache(dir *context.DirNode, agent *elevengo.Agent) {
 				if !file.IsDirectory {
 					continue
 				}
-				node := context.MakeNode(file.FileId, file.Name)
-				node.AppendTo(dir)
+				dir.Append(file.FileId, file.Name)
 			}
 		}
 	}
