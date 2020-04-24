@@ -27,13 +27,22 @@ func createTerminal(opts *Options) (t *core.Terminal, err error) {
 	t = core.NewTerminal(ctx)
 	// Register commands
 	t.Register(
-		command.Wrap(&command.CdCommand{}),
-		command.Wrap(&command.ClearCommand{}),
+		// Exit the terminal
 		command.Wrap(&command.ExitCommand{}),
+		// Clear screen
+		command.Wrap(&command.ClearCommand{}),
+		// Change work directory
+		command.Wrap(&command.CdCommand{}),
+		// Print work directory
+		command.Wrap(&command.PwdCommand{}),
+		// List files under work directory
 		command.Wrap(&command.LsCommand{}),
-		command.Wrap(&command.PlayCommand{}),
+		// Download file to local
 		command.Wrap(&command.DlCommand{}),
-		command.Wrap(&command.PushCommand{}),
-		command.Wrap(&command.PwdCommand{}))
+		// Upload file from local
+		command.Wrap(&command.UlCommand{}),
+		// Play a remote video
+		command.Wrap(&command.PlayCommand{}),
+	)
 	return
 }
