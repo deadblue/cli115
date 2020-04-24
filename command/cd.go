@@ -35,12 +35,13 @@ func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head 
 	}
 	head, last, curr := "", prefix, ctx.Curr
 	pos := strings.LastIndex(prefix, "/")
-	if pos == 0 {
-		curr = ctx.Root
-	} else if pos > 0 {
-		head = prefix[:pos+1]
-		last = prefix[pos+1:]
-		curr = c.locate(ctx, head)
+	if pos >= 0 {
+		head, last = prefix[:pos+1], prefix[pos+1:]
+		if pos == 0 {
+			curr = ctx.Root
+		} else {
+			curr = c.locate(ctx, head)
+		}
 	}
 	if curr == nil {
 		return
