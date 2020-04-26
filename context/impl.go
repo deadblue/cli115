@@ -15,6 +15,8 @@ type Impl struct {
 	Agent *elevengo.Agent
 	User  *elevengo.UserInfo
 
+	// File-system for remote storage
+	Fs *RemoteFs
 	// Root directory.
 	Root *DirNode
 	// Current directory.

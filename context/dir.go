@@ -9,13 +9,14 @@ type DirNode struct {
 	Id string
 	// Display name
 	Name string
-
+	// Depth from root
+	Depth int
+	// Parent node
+	Parent *DirNode
+	// Children nodes
+	Children map[string]*DirNode
 	// Is children cached
 	IsCached bool
-
-	Depth    int
-	Parent   *DirNode
-	Children map[string]*DirNode
 }
 
 // Return the full path of the node

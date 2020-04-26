@@ -1,7 +1,6 @@
 package command
 
 import (
-	"github.com/deadblue/elevengo"
 	"go.dead.blue/cli115/context"
 	"strings"
 )
@@ -18,9 +17,9 @@ func (c *CdCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	if len(args) == 0 {
 		return
 	}
-	dir := c.locate(ctx, args[0])
+	dir := ctx.Fs.LocateDir(args[0])
 	if dir != nil {
-		ctx.Curr = dir
+		ctx.Fs.SetCurr(dir)
 	} else {
 		return errDirNotExist
 	}
@@ -40,14 +39,11 @@ func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head 
 		if pos == 0 {
 			curr = ctx.Root
 		} else {
-			curr = c.locate(ctx, head)
+			curr = ctx.Fs.LocateDir(head)
 		}
 	}
 	if curr == nil {
 		return
-	}
-	if !curr.IsCached {
-		c.fillCache(curr, ctx.Agent)
 	}
 	for name := range curr.Children {
 		if last == "" || strings.HasPrefix(name, last) {
@@ -55,52 +51,4 @@ func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head 
 		}
 	}
 	return
-}
-
-func (c *CdCommand) locate(ctx *context.Impl, path string) (dir *context.DirNode) {
-	dirs := strings.Split(path, "/")
-	depth, curr, start := len(dirs), ctx.Curr, 0
-	if depth > 1 && dirs[0] == "" {
-		// Starts from root
-		curr = ctx.Root
-		start = 1
-	}
-	//
-	for i := start; i < depth; i += 1 {
-		if !curr.IsCached {
-			c.fillCache(curr, ctx.Agent)
-		}
-		dirName := dirs[i]
-		if dirName == "." || dirName == "" {
-			// "." means current dir
-			continue
-		} else if dirName == ".." {
-			// ".." means upstairs dir
-			if curr != ctx.Root {
-				curr = curr.Parent
-			}
-		} else {
-			curr = curr.Children[dirName]
-		}
-		if curr == nil {
-			break
-		}
-	}
-	return curr
-}
-
-func (c *CdCommand) fillCache(dir *context.DirNode, agent *elevengo.Agent) {
-	for cur := elevengo.FileCursor(); cur.HasMore(); cur.Next() {
-		if files, err := agent.FileList(dir.Id, cur); err != nil {
-			break
-		} else {
-			for _, file := range files {
-				if !file.IsDirectory {
-					continue
-				}
-				dir.Append(file.FileId, file.Name)
-			}
-		}
-	}
-	dir.IsCached = true
 }
