@@ -37,7 +37,7 @@ func (c *UlCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 		return
 	}
 	// Create upload ticket
-	ticket, err := ctx.Agent.CreateUploadTicket(ctx.Curr.Id, info)
+	ticket, err := ctx.Agent.CreateUploadTicket(ctx.Fs.Curr().Id, info)
 	if err != nil {
 		return
 	}

@@ -10,7 +10,6 @@ A file system wrapper for all file operations on cloud storage.
 */
 type RemoteFs struct {
 	agent *elevengo.Agent
-
 	// root dir
 	root *DirNode
 	// current dir
@@ -19,13 +18,32 @@ type RemoteFs struct {
 	files map[string]*elevengo.File
 }
 
-func (f *RemoteFs) SetCurr(dir *DirNode) {
-	f.curr = dir
-	// TODO: update file caches
+func (f *RemoteFs) Curr() *DirNode {
+	return f.curr
 }
 
-func (f *RemoteFs) GetCurr() *DirNode {
-	return f.curr
+func (f *RemoteFs) SetCurr(dir *DirNode) {
+	f.curr = dir
+	// Update file cache
+	f.files = make(map[string]*elevengo.File)
+	for cur := elevengo.FileCursor(); cur.HasMore(); cur.Next() {
+		if files, err := f.agent.FileList(f.curr.Id, cur); err != nil {
+			break
+		} else {
+			for _, file := range files {
+				if file.IsFile {
+					f.files[file.Name] = file
+				}
+				if file.IsDirectory {
+					dir.Append(file.FileId, file.Name)
+				}
+			}
+		}
+	}
+}
+
+func (f *RemoteFs) Root() *DirNode {
+	return f.root
 }
 
 /*
@@ -41,11 +59,8 @@ func (f *RemoteFs) LocateDir(path string) (dir *DirNode) {
 		dir = f.root
 		start = 1
 	}
-	//
+	// Go deep
 	for i := start; i < depth; i += 1 {
-		if !dir.IsCached {
-			f.createChildrenCache(dir)
-		}
 		dirName := dirs[i]
 		if dirName == "." || dirName == "" {
 			// "." means current dir
@@ -56,20 +71,19 @@ func (f *RemoteFs) LocateDir(path string) (dir *DirNode) {
 				dir = dir.Parent
 			}
 		} else {
+			if !dir.ChildrenCached {
+				f.fetchChildren(dir)
+			}
 			dir = dir.Children[dirName]
 		}
 		if dir == nil {
 			break
-		} else {
-			if !dir.IsCached {
-				f.createChildrenCache(dir)
-			}
 		}
 	}
 	return dir
 }
 
-func (f *RemoteFs) createChildrenCache(dir *DirNode) {
+func (f *RemoteFs) fetchChildren(dir *DirNode) {
 	for cur := elevengo.FileCursor(); cur.HasMore(); cur.Next() {
 		if files, err := f.agent.FileList(dir.Id, cur); err != nil {
 			break
@@ -82,20 +96,48 @@ func (f *RemoteFs) createChildrenCache(dir *DirNode) {
 			}
 		}
 	}
-	dir.IsCached = true
+	dir.ChildrenCached = true
 }
 
 // Get a file from current directory with specific
 // name, or return nil when not found.
-func (f *RemoteFs) File(name string) {
+func (f *RemoteFs) File(name string) *elevengo.File {
+	return f.files[name]
+}
 
+func (f *RemoteFs) DirNames(dir *DirNode, prefix string) (names []string) {
+	names = make([]string, 0)
+	if dir == nil {
+		dir = f.curr
+	}
+	if !dir.ChildrenCached {
+		f.fetchChildren(dir)
+	}
+	for name := range dir.Children {
+		if prefix == "" || strings.HasPrefix(name, prefix) {
+			names = append(names, name+"/")
+		}
+	}
+	return
+}
+
+func (f *RemoteFs) FileNames(prefix string) (names []string) {
+	names = make([]string, 0)
+	for name := range f.files {
+		if prefix == "" || strings.HasPrefix(name, prefix) {
+			names = append(names, name)
+		}
+	}
+	return names
 }
 
 func NewFs(agent *elevengo.Agent) *RemoteFs {
 	root := MakeNode("0", "")
-	return &RemoteFs{
+	fs := &RemoteFs{
 		agent: agent,
 		root:  root,
-		curr:  root,
+		files: make(map[string]*elevengo.File),
 	}
+	fs.SetCurr(root)
+	return fs
 }

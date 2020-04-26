@@ -19,15 +19,13 @@ func (c *LsCommand) Name() string {
 }
 
 func (c *LsCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
-	dirId := ctx.Curr.Id
+	dirId := ctx.Fs.Curr().Id
 
 	var filter *regexp.Regexp
 	if len(args) > 0 {
 		filter = c.parsePattern(args[0])
 	}
 
-	// Clear cache, we will update it
-	ctx.Files = make(map[string]*elevengo.File)
 	// Print file list
 	tbl := table.New().
 		AddColumn("Size", table.AlignRight).
@@ -39,7 +37,6 @@ func (c *LsCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 		} else {
 			for _, file := range files {
 				// Update cache
-				ctx.Files[file.Name] = file
 				if filter != nil && !filter.MatchString(file.Name) {
 					continue
 				}

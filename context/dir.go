@@ -1,9 +1,8 @@
 package context
 
-import (
-	"strings"
-)
-
+/*
+Directory node
+*/
 type DirNode struct {
 	// Unique ID
 	Id string
@@ -11,33 +10,18 @@ type DirNode struct {
 	Name string
 	// Depth from root
 	Depth int
+
 	// Parent node
 	Parent *DirNode
 	// Children nodes
 	Children map[string]*DirNode
 	// Is children cached
-	IsCached bool
-}
-
-// Return the full path of the node
-func (n *DirNode) Path(sep string) string {
-	buf, depth := make([]string, n.Depth+1), n.Depth
-	for node := n; node != nil; node = node.Parent {
-		buf[depth] = node.Name
-		depth -= 1
-	}
-	if sep == "" {
-		sep = "/"
-	}
-	path := strings.Join(buf, sep)
-	if path == "" {
-		path = "/"
-	}
-	return path
+	ChildrenCached bool
 }
 
 // Append child to this node, do not replace exists entry.
 func (n *DirNode) Append(id, name string) *DirNode {
+	// Do not replace existing one
 	if _, ok := n.Children[name]; !ok {
 		node := MakeNode(id, name)
 		node.Parent = n
@@ -49,12 +33,12 @@ func (n *DirNode) Append(id, name string) *DirNode {
 
 func MakeNode(id, name string) *DirNode {
 	return &DirNode{
-		Id:   id,
-		Name: name,
+		Id:    id,
+		Name:  name,
+		Depth: 0,
 
-		Depth:    0,
-		Parent:   nil,
-		Children: make(map[string]*DirNode),
-		IsCached: false,
+		Parent:         nil,
+		Children:       make(map[string]*DirNode),
+		ChildrenCached: false,
 	}
 }

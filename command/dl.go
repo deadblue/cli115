@@ -5,7 +5,6 @@ import (
 	"go.dead.blue/cli115/context"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 type DlCommand struct {
@@ -26,8 +25,8 @@ func (c *DlCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 		return errCurlNotExist
 	}
 	// Find file from cache.
-	file, ok := ctx.Files[args[0]]
-	if !ok {
+	file := ctx.Fs.File(args[0])
+	if file == nil {
 		return errFileNotExist
 	}
 	if !file.IsFile {
@@ -51,15 +50,11 @@ func (c *DlCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 }
 
 func (c *DlCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head string, choices []string) {
-	head, choices = "", make([]string, 0)
-	if index > 0 {
-		return
-	}
-	// Search file from file cache
-	for name := range ctx.Files {
-		if len(prefix) == 0 || strings.HasPrefix(name, prefix) {
-			choices = append(choices, name)
-		}
+	head = ""
+	if index == 0 {
+		choices = ctx.Fs.FileNames(prefix)
+	} else {
+		choices = make([]string, 0)
 	}
 	return
 }
