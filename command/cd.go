@@ -13,17 +13,16 @@ func (c *CdCommand) Name() string {
 	return "cd"
 }
 
-func (c *CdCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
+func (c *CdCommand) ImplExec(ctx *context.Impl, args []string) error {
 	if len(args) == 0 {
-		return
+		return errArgsNotEnough
 	}
-	dir := ctx.Fs.LocateDir(args[0])
-	if dir != nil {
+	if dir := ctx.Fs.LocateDir(args[0]); dir != nil {
 		ctx.Fs.SetCurr(dir)
 	} else {
 		return errDirNotExist
 	}
-	return
+	return nil
 }
 
 func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head string, choices []string) {
@@ -32,23 +31,13 @@ func (c *CdCommand) ImplCplt(ctx *context.Impl, index int, prefix string) (head 
 	if index > 0 {
 		return
 	}
-	head, last, curr := "", prefix, ctx.Curr
-	pos := strings.LastIndex(prefix, "/")
-	if pos >= 0 {
+	head, last, curr := "", prefix, ctx.Fs.Curr()
+	if pos := strings.LastIndex(prefix, "/"); pos >= 0 {
 		head, last = prefix[:pos+1], prefix[pos+1:]
-		if pos == 0 {
-			curr = ctx.Root
-		} else {
-			curr = ctx.Fs.LocateDir(head)
-		}
+		curr = ctx.Fs.LocateDir(head)
 	}
-	if curr == nil {
-		return
-	}
-	for name := range curr.Children {
-		if last == "" || strings.HasPrefix(name, last) {
-			choices = append(choices, name+"/")
-		}
+	if curr != nil {
+		choices = ctx.Fs.DirNames(curr, last)
 	}
 	return
 }
