@@ -70,9 +70,9 @@ func (t *Terminal) handleErr(err error) {
 
 func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []string, tail string) {
 	// pre-init the result
-	head, choices, tail = line[:pos], make([]string, 0), line[pos:]
+	head, choices, tail = StringLeftRunes(line, pos), make([]string, 0), StringRightRunes(line, pos)
 	// parse input
-	fields := InputSplit(line[:pos])
+	fields := InputSplit(head)
 	if len(fields) == 1 {
 		// Here we need give choices for command names
 		head, tail = "", ""
