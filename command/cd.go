@@ -2,6 +2,7 @@ package command
 
 import (
 	"go.dead.blue/cli115/context"
+	"go.dead.blue/cli115/internal/pkg/spinner"
 	"strings"
 )
 
@@ -18,7 +19,12 @@ func (c *CdCommand) ImplExec(ctx *context.Impl, args []string) error {
 		return errArgsNotEnough
 	}
 	if dir := ctx.Fs.LocateDir(args[0]); dir != nil {
+		s := spinner.NewBuilder().
+			Suffix(" Enter directory...").
+			Complete("Done!").Build()
+		s.Start()
 		ctx.Fs.SetCurr(dir)
+		s.Stop()
 	} else {
 		return errDirNotExist
 	}
