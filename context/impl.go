@@ -24,6 +24,14 @@ type Impl struct {
 	Fs *RemoteFs
 }
 
+func (i *Impl) Startup() error {
+	return nil
+}
+
+func (i *Impl) Shutdown() error {
+	return nil
+}
+
 func (i *Impl) Prompt() string {
 	return fmt.Sprintf("%s:%s/ # ", i.User.Name, i.Fs.curr.Name)
 }

@@ -31,6 +31,9 @@ func (t *Terminal) Register(cmds ...Command) {
 }
 
 func (t *Terminal) Run() (err error) {
+	if err = t.ctx.Startup(); err != nil {
+		return err
+	}
 	for t.ctx.Alive() {
 		if input, err := t.state.Prompt(t.ctx.Prompt()); err != nil {
 			if err == liner.ErrPromptAborted {
@@ -43,7 +46,7 @@ func (t *Terminal) Run() (err error) {
 			t.state.AppendHistory(input)
 		}
 	}
-	return nil
+	return t.ctx.Shutdown()
 }
 
 func (t *Terminal) handle(line string) (err error) {
