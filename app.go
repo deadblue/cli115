@@ -4,23 +4,24 @@ import (
 	"go.dead.blue/cli115/command"
 	"go.dead.blue/cli115/context"
 	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/internal/app"
 )
 
 func Run() error {
-	opts := FromCommandLine()
-	if t, err := createTerminal(opts); err == nil {
+	opts, conf := app.ParseOptions(), app.LoadConf()
+	if t, err := createTerminal(opts, conf); err == nil {
 		return t.Run()
 	} else {
 		return err
 	}
 }
 
-func createTerminal(opts *Options) (t *core.Terminal, err error) {
+func createTerminal(opts *app.Options, conf *app.Conf) (t *core.Terminal, err error) {
 	agent, err := initAgent(opts)
 	if err != nil {
 		return
 	}
-	ctx, err := context.New(agent)
+	ctx, err := context.New(agent, conf)
 	if err != nil {
 		return
 	}

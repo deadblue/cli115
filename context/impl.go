@@ -3,6 +3,7 @@ package context
 import (
 	"fmt"
 	"github.com/deadblue/elevengo"
+	"go.dead.blue/cli115/internal/app"
 )
 
 /*
@@ -11,6 +12,9 @@ An implementation of core.Context.
 type Impl struct {
 	// Flag to control the terminal lifecycle
 	alive bool
+
+	// Config
+	Conf *app.Conf
 
 	// Remote API agent
 	Agent *elevengo.Agent
