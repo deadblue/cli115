@@ -14,6 +14,7 @@ var (
 	errFileNotExist Error = "No such file"
 	errNotFile      Error = "Not a regular file"
 
+	errNoDownloader Error = "No available downloader"
 	errMpvNotExist  Error = "Can not find mpv executable"
 	errCurlNotExist Error = "Can not find curl executable"
 )
