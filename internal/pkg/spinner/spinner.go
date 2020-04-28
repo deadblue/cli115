@@ -37,9 +37,13 @@ func (s *implSpinner) run() {
 		fmt.Printf("\r%s%s%s", s.prefix, frame, s.suffix)
 		time.Sleep(s.interval)
 	}
-	// clear current line
+	// Clear current line
+	// TODO: Test on Windows
 	fmt.Print("\x1b[2K\n\x1b[1A")
-	fmt.Println(s.complete)
+	// Print complete message
+	if len(s.complete) > 0 {
+		fmt.Println(s.complete)
+	}
 	close(s.ch)
 }
 

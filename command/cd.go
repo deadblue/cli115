@@ -20,7 +20,7 @@ func (c *CdCommand) ImplExec(ctx *context.Impl, args []string) error {
 	}
 	if dir := ctx.Fs.LocateDir(args[0]); dir != nil {
 		s := spinner.NewBuilder().
-			Suffix(" Enter directory...").
+			Suffix(" Loading directory content...").
 			Complete("Done!").Build()
 		s.Start()
 		ctx.Fs.SetCurr(dir)
