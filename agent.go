@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"github.com/deadblue/elevengo"
 	"github.com/skip2/go-qrcode"
-	"go.dead.blue/cli115/util"
+	"go.dead.blue/cli115/internal/app"
+	"go.dead.blue/cli115/internal/pkg/util"
 	"os"
 	"path"
 )
@@ -22,7 +23,7 @@ type CookieData struct {
 	Seid string `json:"seid"`
 }
 
-func initAgent(opts *Options) (agent *elevengo.Agent, err error) {
+func initAgent(opts *app.Options) (agent *elevengo.Agent, err error) {
 	agent = elevengo.Default()
 	// try load cookie
 	if cr, err := loadCookie(opts); err == nil {
@@ -37,7 +38,7 @@ func initAgent(opts *Options) (agent *elevengo.Agent, err error) {
 	return
 }
 
-func loadCookie(opts *Options) (cr *elevengo.Credential, err error) {
+func loadCookie(opts *app.Options) (cr *elevengo.Credential, err error) {
 	// make credentials by arguments
 	if opts.Uid != "" && opts.Cid != "" && opts.Seid != "" {
 		cr = &elevengo.Credential{
@@ -65,7 +66,7 @@ func loadCookie(opts *Options) (cr *elevengo.Credential, err error) {
 	return
 }
 
-func saveCookie(agent *elevengo.Agent, opts *Options) (err error) {
+func saveCookie(agent *elevengo.Agent, opts *app.Options) (err error) {
 	// export credentials
 	cr, err := agent.CredentialExport()
 	if err != nil {
