@@ -23,7 +23,8 @@ type Impl struct {
 	Agent *elevengo.Agent
 	User  *elevengo.UserInfo
 
-	ac *aria2.Client
+	// Aria2 RPC client
+	Aria2 *aria2.Client
 
 	// File-system for remote storage
 	Fs *RemoteFs
@@ -32,14 +33,15 @@ type Impl struct {
 func (i *Impl) Startup() error {
 	// Test aria2 rpc server
 	if conf := i.Conf.Aria2; conf.Rpc {
-		i.ac = aria2.New(conf.Endpoint, conf.Token)
-		if ver, err := i.ac.GetVersion(); err == nil {
+		i.Aria2 = aria2.New(conf.Endpoint, conf.Token)
+		if ver, err := i.Aria2.GetVersion(); err == nil {
 			log.Printf("Aria2 version: %s", ver)
 		} else {
 			conf.Rpc = false
 			log.Printf("Fail to connect aria2 RPC server: %s", err.Error())
 		}
 	}
+	// TODO: Move 115 login into here
 	return nil
 }
 

@@ -37,7 +37,7 @@ func (c *DlCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	}
 	// Prefer to use aria2 if available.
 	if ctx.Conf.Aria2 != nil {
-		return c.aria2Download(ctx.Conf.Aria2, ticket, file.Sha1)
+		return c.aria2Download(ctx, ticket, file.Sha1)
 	} else if ctx.Conf.Curl != nil {
 		return c.curlDownload(ctx.Conf.Curl, ticket)
 	} else {
@@ -45,8 +45,27 @@ func (c *DlCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	}
 }
 
-func (c *DlCommand) aria2Download(conf *app.Aria2Conf, ticket *elevengo.DownloadTicket, sha1 string) error {
-	if !conf.Rpc {
+func (c *DlCommand) aria2Download(ctx *context.Impl, ticket *elevengo.DownloadTicket, sha1 string) error {
+	if conf := ctx.Conf.Aria2; conf.Rpc {
+		fmt.Println("Downloading file via aira2 RPC ...")
+		// headers
+		headers, i := make([]string, len(ticket.Headers)), 0
+		for name, value := range ticket.Headers {
+			headers[i] = fmt.Sprintf("%s: %s", name, value)
+			i += 1
+		}
+		// options
+		options := map[string]interface{}{
+			"max-connection-per-server": 2,
+			"split":                     16,
+			"min-split-size":            "1M",
+			"header":                    headers,
+			"out":                       ticket.FileName,
+			"checksum":                  fmt.Sprintf("sha-1=%s", sha1),
+		}
+		return ctx.Aria2.AddTask(ticket.Url, options)
+	} else {
+		fmt.Println("Downloading file via aira2 ...")
 		cmd := exec.Command(conf.Path,
 			"--max-connection-per-server=2",
 			"--split=16", "--min-split-size=1M",
@@ -59,13 +78,11 @@ func (c *DlCommand) aria2Download(conf *app.Aria2Conf, ticket *elevengo.Download
 		cmd.Args = append(cmd.Args, ticket.Url)
 		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 		return cmd.Run()
-	} else {
-		// TODO
-		return nil
 	}
 }
 
 func (c *DlCommand) curlDownload(conf *app.CurlConf, ticket *elevengo.DownloadTicket) error {
+	fmt.Println("Downloading file via curl ...")
 	cmd := exec.Command(conf.Path, "-#", ticket.Url)
 	for name, value := range ticket.Headers {
 		cmd.Args = append(cmd.Args, "-H", fmt.Sprintf("%s: %s", name, value))
