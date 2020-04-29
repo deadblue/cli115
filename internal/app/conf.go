@@ -15,7 +15,7 @@ type Aria2Conf struct {
 	// RPC mode flag
 	Rpc bool `yaml:"rpc"`
 	// RPC endpoint
-	Url string `yaml:"url"`
+	Endpoint string `yaml:"endpoint"`
 	// RPC token
 	Token string `yaml:"token"`
 	// Download directory
