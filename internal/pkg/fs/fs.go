@@ -1,4 +1,4 @@
-package context
+package fs
 
 import (
 	"github.com/deadblue/elevengo"
@@ -131,7 +131,7 @@ func (f *RemoteFs) FileNames(prefix string) (names []string) {
 	return names
 }
 
-func NewFs(agent *elevengo.Agent) *RemoteFs {
+func New(agent *elevengo.Agent) *RemoteFs {
 	root := MakeNode("0", "")
 	fs := &RemoteFs{
 		agent: agent,

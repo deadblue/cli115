@@ -6,6 +6,7 @@ import (
 	"go.dead.blue/cli115/core"
 	"go.dead.blue/cli115/internal/app"
 	"go.dead.blue/cli115/internal/pkg/aria2"
+	"go.dead.blue/cli115/internal/pkg/fs"
 	"log"
 )
 
@@ -27,7 +28,7 @@ type Impl struct {
 	Aria2 *aria2.Client
 
 	// File-system for remote storage
-	Fs *RemoteFs
+	Fs *fs.RemoteFs
 }
 
 func (i *Impl) Startup() error {
@@ -50,7 +51,7 @@ func (i *Impl) Shutdown() error {
 }
 
 func (i *Impl) Prompt() string {
-	return fmt.Sprintf("%s:%s/ # ", i.User.Name, i.Fs.curr.Name)
+	return fmt.Sprintf("%s:%s/ # ", i.User.Name, i.Fs.Curr().Name)
 }
 
 func (i *Impl) Alive() bool {
@@ -70,7 +71,7 @@ func New(agent *elevengo.Agent, conf *app.Conf) (core.Context, error) {
 		Agent: agent,
 		User:  agent.User(),
 		// Remote file system
-		Fs: NewFs(agent),
+		Fs: fs.New(agent),
 	}
 	return impl, nil
 }
