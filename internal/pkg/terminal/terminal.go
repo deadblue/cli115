@@ -51,7 +51,7 @@ func (t *Terminal) Run() (err error) {
 
 func (t *Terminal) handle(line string) (err error) {
 	// Split input by space
-	fields := InputSplit(line)
+	fields := split(line)
 	if len(fields) == 0 {
 		return
 	}
@@ -75,7 +75,7 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 	// pre-init the result
 	head, choices, tail = StringLeftRunes(line, pos), make([]string, 0), StringRightRunes(line, pos)
 	// parse input
-	fields := InputSplit(head)
+	fields := split(head)
 	if len(fields) == 1 {
 		// Here we need give choices for command names
 		head, tail = "", ""
@@ -110,7 +110,7 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 		for i := 1; i < fieldCount-1; i++ {
 			arg := fields[i]
 			if len(arg) > 0 {
-				buf.WriteString(InputEscape(arg))
+				buf.WriteString(arg)
 				buf.WriteString(" ")
 			}
 		}
@@ -121,10 +121,6 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 		argHead, choices = ac.Completer(t.ctx, index, lastArg)
 		if argHead != "" {
 			head = fmt.Sprintf("%s%s", head, argHead)
-		}
-		// Escape choice
-		for index, choice := range choices {
-			choices[index] = InputEscape(choice)
 		}
 	}
 	return
