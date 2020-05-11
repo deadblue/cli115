@@ -3,7 +3,7 @@ package command
 import (
 	"bytes"
 	"fmt"
-	"go.dead.blue/cli115/internal/impl/context"
+	"go.dead.blue/cli115/internal/app/context"
 	"os/exec"
 )
 

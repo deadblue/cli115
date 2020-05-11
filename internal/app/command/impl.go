@@ -2,7 +2,7 @@ package command
 
 import (
 	"errors"
-	"go.dead.blue/cli115/internal/impl/context"
+	"go.dead.blue/cli115/internal/app/context"
 	"go.dead.blue/cli115/internal/pkg/terminal"
 )
 

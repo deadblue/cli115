@@ -3,7 +3,7 @@ package context
 import (
 	"fmt"
 	"github.com/deadblue/elevengo"
-	"go.dead.blue/cli115/internal/app"
+	"go.dead.blue/cli115/internal/app/conf"
 	"go.dead.blue/cli115/internal/pkg/aria2"
 	"go.dead.blue/cli115/internal/pkg/fs"
 	"go.dead.blue/cli115/internal/pkg/terminal"
@@ -11,38 +11,48 @@ import (
 )
 
 /*
-An implementation of core.Context.
+An implementation of terminal.Context.
 */
 type Impl struct {
 	// Flag to control the terminal lifecycle
 	alive bool
 
-	// Config
-	Conf *app.Conf
+	// options and conf
+	Opts *conf.Options
+	Conf *conf.Conf
+
+	// Login user name
+	user string
 
 	// Remote API agent
 	Agent *elevengo.Agent
-	User  *elevengo.UserInfo
-
-	// Aria2 RPC client
-	Aria2 *aria2.Client
 
 	// File-system for remote storage
 	Fs *fs.RemoteFs
+
+	// Aria2 RPC client
+	Aria2 *aria2.Client
 }
 
 func (i *Impl) Startup() error {
+	// Init elevengo agent
+	if agent, err := initAgent(i.Opts); err != nil {
+		return err
+	} else {
+		i.Agent = agent
+		i.user = agent.User().Name
+		i.Fs = fs.New(agent)
+	}
 	// Test aria2 rpc server
-	if conf := i.Conf.Aria2; conf.Rpc {
-		i.Aria2 = aria2.New(conf.Endpoint, conf.Token)
+	if cnf := i.Conf.Aria2; cnf.Rpc {
+		i.Aria2 = aria2.New(cnf.Endpoint, cnf.Token)
 		if ver, err := i.Aria2.GetVersion(); err == nil {
 			log.Printf("Aria2 version: %s", ver)
 		} else {
-			conf.Rpc = false
+			cnf.Rpc = false
 			log.Printf("Fail to connect aria2 RPC server: %s", err.Error())
 		}
 	}
-	// TODO: Move 115 login into here
 	return nil
 }
 
@@ -51,7 +61,7 @@ func (i *Impl) Shutdown() error {
 }
 
 func (i *Impl) Prompt() string {
-	return fmt.Sprintf("%s:%s/ # ", i.User.Name, i.Fs.Curr().Name)
+	return fmt.Sprintf("%s:%s/ # ", i.user, i.Fs.Curr().Name)
 }
 
 func (i *Impl) Alive() bool {
@@ -62,16 +72,11 @@ func (i *Impl) Die() {
 	i.alive = false
 }
 
-func New(agent *elevengo.Agent, conf *app.Conf) (terminal.Context, error) {
-	impl := &Impl{
+func New(opts *conf.Options, conf *conf.Conf) terminal.Context {
+	return &Impl{
 		alive: true,
 		// App config
+		Opts: opts,
 		Conf: conf,
-		// Agent
-		Agent: agent,
-		User:  agent.User(),
-		// Remote file system
-		Fs: fs.New(agent),
 	}
-	return impl, nil
 }

@@ -1,4 +1,4 @@
-package app
+package conf
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ Options:
 
 `
 
-func ParseOptions() (opts *Options) {
+func ParseCommandLine() (opts *Options) {
 	opts, help := &Options{}, false
 	// Parse arguments
 	fs := pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)

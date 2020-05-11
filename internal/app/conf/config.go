@@ -1,4 +1,4 @@
-package app
+package conf
 
 import (
 	"go.dead.blue/cli115/internal/pkg/util"
@@ -7,6 +7,10 @@ import (
 	"os"
 	"os/exec"
 	"path"
+)
+
+const (
+	appName = "cli115"
 )
 
 type Aria2Conf struct {
@@ -43,7 +47,7 @@ type Conf struct {
 	Mpv *MpvConf `yaml:"mpv"`
 }
 
-func LoadConf() (conf *Conf) {
+func Load() (conf *Conf) {
 	conf = &Conf{}
 	// Load conf from file
 	confDir, _ := os.UserConfigDir()

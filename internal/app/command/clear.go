@@ -1,8 +1,10 @@
+// +build !windows
+
 package command
 
 import (
 	"fmt"
-	"go.dead.blue/cli115/internal/impl/context"
+	"go.dead.blue/cli115/internal/app/context"
 )
 
 type ClearCommand struct {
@@ -14,6 +16,6 @@ func (c *ClearCommand) Name() string {
 }
 
 func (c *ClearCommand) ImplExec(_ *context.Impl, _ []string) error {
-	fmt.Println("Sorry, this command does not support your OS.")
+	fmt.Print("\x1b[H\x1b[2J")
 	return nil
 }

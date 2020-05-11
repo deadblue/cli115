@@ -1,7 +1,7 @@
 package command
 
 import (
-	"go.dead.blue/cli115/internal/impl/context"
+	"go.dead.blue/cli115/internal/app/context"
 )
 
 type ExitCommand struct {

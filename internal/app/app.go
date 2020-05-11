@@ -1,36 +1,18 @@
 package app
 
 import (
-	"go.dead.blue/cli115/internal/impl/command"
-	"go.dead.blue/cli115/internal/impl/context"
+	"go.dead.blue/cli115/internal/app/command"
+	"go.dead.blue/cli115/internal/app/conf"
+	"go.dead.blue/cli115/internal/app/context"
 	"go.dead.blue/cli115/internal/pkg/terminal"
 )
 
-const (
-	appName = "cli115"
-	appVer  = "0.0.1"
-)
-
 func Run() error {
-	opts, conf := ParseOptions(), LoadConf()
-	if t, err := createTerminal(opts, conf); err == nil {
-		return t.Run()
-	} else {
-		return err
-	}
-}
-
-func createTerminal(opts *Options, conf *Conf) (t *terminal.Terminal, err error) {
-	agent, err := initAgent(opts)
-	if err != nil {
-		return
-	}
-	ctx, err := context.New(agent, conf)
-	if err != nil {
-		return
-	}
-	t = terminal.New(ctx)
-	// Register commands
+	// Create context
+	opts, cnf := conf.ParseCommandLine(), conf.Load()
+	ctx := context.New(opts, cnf)
+	// Create and setup terminal
+	t := terminal.New(ctx)
 	t.Register(
 		// Exit the terminal
 		command.Wrap(&command.ExitCommand{}),
@@ -49,5 +31,6 @@ func createTerminal(opts *Options, conf *Conf) (t *terminal.Terminal, err error)
 		// Play a remote video
 		command.Wrap(&command.PlayCommand{}),
 	)
-	return
+	// Run the terminal
+	return t.Run()
 }

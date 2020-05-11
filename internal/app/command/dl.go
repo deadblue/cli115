@@ -3,8 +3,8 @@ package command
 import (
 	"fmt"
 	"github.com/deadblue/elevengo"
-	"go.dead.blue/cli115/internal/app"
-	"go.dead.blue/cli115/internal/impl/context"
+	"go.dead.blue/cli115/internal/app/conf"
+	"go.dead.blue/cli115/internal/app/context"
 	"os"
 	"os/exec"
 )
@@ -81,7 +81,7 @@ func (c *DlCommand) aria2Download(ctx *context.Impl, ticket *elevengo.DownloadTi
 	}
 }
 
-func (c *DlCommand) curlDownload(conf *app.CurlConf, ticket *elevengo.DownloadTicket) error {
+func (c *DlCommand) curlDownload(conf *conf.CurlConf, ticket *elevengo.DownloadTicket) error {
 	fmt.Println("Downloading file via curl ...")
 	cmd := exec.Command(conf.Path, "-#", ticket.Url)
 	for name, value := range ticket.Headers {
