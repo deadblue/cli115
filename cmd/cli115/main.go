@@ -1,11 +1,11 @@
 package main
 
 import (
-	"go.dead.blue/cli115"
+	"go.dead.blue/cli115/internal/app"
 )
 
 func main() {
-	err := cli115.Run()
+	err := app.Run()
 	if err != nil {
 		panic(err)
 	}

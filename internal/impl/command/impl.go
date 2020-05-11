@@ -2,8 +2,8 @@ package command
 
 import (
 	"errors"
-	"go.dead.blue/cli115/context"
-	"go.dead.blue/cli115/core"
+	"go.dead.blue/cli115/internal/impl/context"
+	"go.dead.blue/cli115/internal/pkg/terminal"
 )
 
 var (
@@ -28,7 +28,7 @@ type wrapper struct {
 }
 
 // Wrap the Exec method, convert the ctx into the type we want.
-func (w *wrapper) Exec(ctx core.Context, args []string) error {
+func (w *wrapper) Exec(ctx terminal.Context, args []string) error {
 	if ictx, ok := ctx.(*context.Impl); ok {
 		return w.Impl.ImplExec(ictx, args)
 	} else {
@@ -40,7 +40,7 @@ type wraperEx struct {
 	wrapper
 }
 
-func (we *wraperEx) Completer(ctx core.Context, index int, prefix string) (string, []string) {
+func (we *wraperEx) Completer(ctx terminal.Context, index int, prefix string) (string, []string) {
 	if ictx, ok := ctx.(*context.Impl); !ok {
 		// return empty choice for illegal context
 		return "", []string{}
@@ -51,7 +51,7 @@ func (we *wraperEx) Completer(ctx core.Context, index int, prefix string) (strin
 	}
 }
 
-func Wrap(cmd Impl) core.Command {
+func Wrap(cmd Impl) terminal.Command {
 	wp := wrapper{cmd}
 	if _, ok := cmd.(ImplCompleter); ok {
 		return &wraperEx{wp}

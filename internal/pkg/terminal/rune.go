@@ -1,4 +1,4 @@
-package core
+package terminal
 
 func StringLeftRunes(str string, end int) string {
 	runes := []rune(str)

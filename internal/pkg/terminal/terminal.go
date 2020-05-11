@@ -1,4 +1,4 @@
-package core
+package terminal
 
 import (
 	"errors"
@@ -130,7 +130,7 @@ func (t *Terminal) wordCompleter(line string, pos int) (head string, choices []s
 	return
 }
 
-func NewTerminal(ctx Context) *Terminal {
+func New(ctx Context) *Terminal {
 	// Create state
 	state := liner.NewLiner()
 	state.SetCtrlCAborts(true)

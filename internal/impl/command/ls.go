@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/deadblue/elevengo"
-	"go.dead.blue/cli115/context"
+	"go.dead.blue/cli115/internal/impl/context"
 	"go.dead.blue/cli115/internal/pkg/table"
 	"go.dead.blue/cli115/internal/pkg/util"
 	"os"

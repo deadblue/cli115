@@ -3,10 +3,10 @@ package context
 import (
 	"fmt"
 	"github.com/deadblue/elevengo"
-	"go.dead.blue/cli115/core"
 	"go.dead.blue/cli115/internal/app"
 	"go.dead.blue/cli115/internal/pkg/aria2"
 	"go.dead.blue/cli115/internal/pkg/fs"
+	"go.dead.blue/cli115/internal/pkg/terminal"
 	"log"
 )
 
@@ -62,7 +62,7 @@ func (i *Impl) Die() {
 	i.alive = false
 }
 
-func New(agent *elevengo.Agent, conf *app.Conf) (core.Context, error) {
+func New(agent *elevengo.Agent, conf *app.Conf) (terminal.Context, error) {
 	impl := &Impl{
 		alive: true,
 		// App config

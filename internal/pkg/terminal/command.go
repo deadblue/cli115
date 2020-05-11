@@ -1,4 +1,4 @@
-package core
+package terminal
 
 /*
 Command declare an interface that a command should be implemented.

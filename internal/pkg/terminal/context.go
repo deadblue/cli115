@@ -1,4 +1,4 @@
-package core
+package terminal
 
 type Context interface {
 
@@ -10,5 +10,4 @@ type Context interface {
 	Startup() error
 	// Shutdown context
 	Shutdown() error
-
 }
