@@ -36,37 +36,3 @@ func split(line string) (fields []string) {
 	fields = append(fields, sb.String())
 	return
 }
-
-// Escape space in str.
-// A string looks like "a b" will be "a\ b".
-func Escape(str string) string {
-	sb := strings.Builder{}
-	sb.Grow(len(str) * 2)
-	for _, ch := range str {
-		if ch == charEscape || ch == charSpace {
-			sb.WriteRune(charEscape)
-		}
-		sb.WriteRune(ch)
-	}
-	return sb.String()
-}
-
-// Unescape space in str.
-// A string looks like "a\ b" will get "a b".
-func Unescape(str string) string {
-	sb, escape := strings.Builder{}, false
-	sb.Grow(len(str))
-	for _, ch := range str {
-		if escape {
-			sb.WriteRune(ch)
-			escape = false
-			continue
-		}
-		if ch == charEscape {
-			escape = true
-		} else {
-			sb.WriteRune(ch)
-		}
-	}
-	return sb.String()
-}
