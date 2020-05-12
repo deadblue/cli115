@@ -1,4 +1,4 @@
-package conf
+package config
 
 import (
 	"go.dead.blue/cli115/internal/pkg/util"

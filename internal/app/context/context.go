@@ -3,7 +3,7 @@ package context
 import (
 	"fmt"
 	"github.com/deadblue/elevengo"
-	"go.dead.blue/cli115/internal/app/conf"
+	"go.dead.blue/cli115/internal/app/config"
 	"go.dead.blue/cli115/internal/pkg/aria2"
 	"go.dead.blue/cli115/internal/pkg/fs"
 	"go.dead.blue/cli115/internal/pkg/terminal"
@@ -18,8 +18,8 @@ type Impl struct {
 	alive bool
 
 	// options and conf
-	Opts *conf.Options
-	Conf *conf.Conf
+	Opts *config.Options
+	Conf *config.Conf
 
 	// Login user name
 	user string
@@ -72,7 +72,7 @@ func (i *Impl) Die() {
 	i.alive = false
 }
 
-func New(opts *conf.Options, conf *conf.Conf) terminal.Context {
+func New(opts *config.Options, conf *config.Conf) terminal.Context {
 	return &Impl{
 		alive: true,
 		// App config

@@ -2,15 +2,15 @@ package app
 
 import (
 	"go.dead.blue/cli115/internal/app/command"
-	"go.dead.blue/cli115/internal/app/conf"
+	"go.dead.blue/cli115/internal/app/config"
 	"go.dead.blue/cli115/internal/app/context"
 	"go.dead.blue/cli115/internal/pkg/terminal"
 )
 
 func Run() error {
 	// Create context
-	opts, cnf := conf.ParseCommandLine(), conf.Load()
-	ctx := context.New(opts, cnf)
+	opts, conf := config.ParseCommandLine(), config.Load()
+	ctx := context.New(opts, conf)
 	// Create and setup terminal
 	t := terminal.New(ctx)
 	t.Register(
