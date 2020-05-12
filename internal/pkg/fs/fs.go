@@ -2,6 +2,7 @@ package fs
 
 import (
 	"github.com/deadblue/elevengo"
+	"go.dead.blue/cli115/internal/pkg/util"
 	"strings"
 )
 
@@ -16,6 +17,10 @@ type RemoteFs struct {
 	curr *DirNode
 	// files cache under current dir
 	files map[string]*elevengo.File
+}
+
+func (f *RemoteFs) Root() *DirNode {
+	return f.root
 }
 
 func (f *RemoteFs) Curr() *DirNode {
@@ -42,10 +47,6 @@ func (f *RemoteFs) SetCurr(dir *DirNode) {
 	}
 }
 
-func (f *RemoteFs) Root() *DirNode {
-	return f.root
-}
-
 /*
 Locate directory by path.
 "path" starts with "/" means an absolute path, otherwise a relative path.
@@ -61,7 +62,7 @@ func (f *RemoteFs) LocateDir(path string) (dir *DirNode) {
 	}
 	// Go deep
 	for i := start; i < depth; i += 1 {
-		dirName := dirs[i]
+		dirName := util.StdUnescape(dirs[i])
 		if dirName == "." || dirName == "" {
 			// "." means current dir
 			continue
@@ -102,11 +103,22 @@ func (f *RemoteFs) fetchChildren(dir *DirNode) {
 // Get a file from current directory with specific
 // name, or return nil when not found.
 func (f *RemoteFs) File(name string) *elevengo.File {
-	return f.files[name]
+	return f.files[util.StdUnescape(name)]
+}
+
+// Get files from current directory whose name matches the given pattern.
+func (f *RemoteFs) Files(pattern string) []*elevengo.File {
+	result := make([]*elevengo.File, 0)
+	for name, file := range f.files {
+		if mustMatch(pattern, name) {
+			result = append(result, file)
+		}
+	}
+	return result
 }
 
 func (f *RemoteFs) DirNames(dir *DirNode, prefix string) (names []string) {
-	names = make([]string, 0)
+	prefix, names = util.StdUnescape(prefix), make([]string, 0)
 	if dir == nil {
 		dir = f.curr
 	}
@@ -115,17 +127,17 @@ func (f *RemoteFs) DirNames(dir *DirNode, prefix string) (names []string) {
 	}
 	for name := range dir.Children {
 		if prefix == "" || strings.HasPrefix(name, prefix) {
-			names = append(names, name+"/")
+			names = append(names, escape(name)+"/")
 		}
 	}
 	return
 }
 
 func (f *RemoteFs) FileNames(prefix string) (names []string) {
-	names = make([]string, 0)
+	prefix, names = util.StdUnescape(prefix), make([]string, 0)
 	for name := range f.files {
 		if prefix == "" || strings.HasPrefix(name, prefix) {
-			names = append(names, name)
+			names = append(names, escape(name))
 		}
 	}
 	return names
