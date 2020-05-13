@@ -29,7 +29,7 @@ func (c *FindCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	tbl := table.New().
 		AddColumn("#", table.AlignRight).
 		AddColumn("Size", table.AlignRight).
-		AddColumn("Name", table.AlignLeft)
+		AddColumn("Path", table.AlignLeft)
 	for cursor := elevengo.FileCursor(); cursor.HasMore(); cursor.Next() {
 		files, err := ctx.Agent.FileSearch(rootId, keyword, cursor)
 		if err != nil {
