@@ -30,6 +30,8 @@ func Run() error {
 		command.Wrap(&command.UlCommand{}),
 		// Play a remote video
 		command.Wrap(&command.PlayCommand{}),
+		// Remove file
+		command.Wrap(&command.RmCommand{}),
 	)
 	// Run the terminal
 	return t.Run()
