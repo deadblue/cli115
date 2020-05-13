@@ -32,6 +32,8 @@ func Run() error {
 		command.Wrap(&command.PlayCommand{}),
 		// Remove file
 		command.Wrap(&command.RmCommand{}),
+		// Search file
+		command.Wrap(&command.FindCommand{}),
 	)
 	// Run the terminal
 	return t.Run()
