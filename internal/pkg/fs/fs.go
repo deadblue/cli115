@@ -110,7 +110,7 @@ func (f *RemoteFs) File(name string) *elevengo.File {
 func (f *RemoteFs) Files(pattern string) []*elevengo.File {
 	result := make([]*elevengo.File, 0)
 	for name, file := range f.files {
-		if mustMatch(pattern, name) {
+		if MustMatch(pattern, name) {
 			result = append(result, file)
 		}
 	}

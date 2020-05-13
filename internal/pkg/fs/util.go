@@ -11,7 +11,7 @@ func escape(name string) string {
 	return util.StdEscape(name, specialChars)
 }
 
-func mustMatch(pattern, name string) bool {
+func MustMatch(pattern, name string) bool {
 	if ok, err := path.Match(pattern, name); err != nil {
 		return false
 	} else {

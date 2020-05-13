@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/deadblue/elevengo"
 	"go.dead.blue/cli115/internal/app/context"
+	"go.dead.blue/cli115/internal/pkg/fs"
 	"go.dead.blue/cli115/internal/pkg/table"
 	"go.dead.blue/cli115/internal/pkg/util"
 	"os"
@@ -21,9 +22,9 @@ func (c *LsCommand) Name() string {
 func (c *LsCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	dirId := ctx.Fs.Curr().Id
 
-	var filter *regexp.Regexp
+	pattern := ""
 	if len(args) > 0 {
-		filter = c.parsePattern(args[0])
+		pattern = args[0]
 	}
 
 	// Print file list
@@ -36,8 +37,7 @@ func (c *LsCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 			return err
 		} else {
 			for _, file := range files {
-				// Update cache
-				if filter != nil && !filter.MatchString(file.Name) {
+				if pattern != "" && !fs.MustMatch(pattern, file.Name) {
 					continue
 				}
 				if file.IsDirectory {
@@ -45,7 +45,6 @@ func (c *LsCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 				} else {
 					tbl.AppendRow([]string{util.FormatSize(file.Size), file.Name})
 				}
-
 			}
 		}
 	}
