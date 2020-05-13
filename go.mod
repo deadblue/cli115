@@ -1,7 +1,7 @@
 module go.dead.blue/cli115
 
 require (
-	github.com/deadblue/elevengo v0.1.3
+	github.com/deadblue/elevengo v0.1.4-0.20200512122134-cc2e39d8e7f6
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/peterh/liner v1.2.0
 	github.com/rs/xid v1.2.1
