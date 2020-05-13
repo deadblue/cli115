@@ -56,6 +56,9 @@ func (t *Terminal) handle(line string) (err error) {
 		return
 	}
 	name, args := fields[0], fields[1:]
+	if name == "" {
+		return
+	}
 	if c, ok := t.cmds[name]; !ok {
 		return errCommandNotExist
 	} else {
