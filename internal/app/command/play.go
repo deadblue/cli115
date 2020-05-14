@@ -19,12 +19,11 @@ func (c *PlayCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	if len(args) == 0 {
 		return errArgsNotEnough
 	}
-	// search mpv
-	exe, err := exec.LookPath("mpv")
-	if err != nil {
+	// Check mpv
+	if ctx.Conf.Mpv == nil {
 		return errMpvNotExist
 	}
-	// search file
+	// Search file
 	file := ctx.Fs.File(args[0])
 	if file == nil {
 		return errFileNotExist
@@ -32,13 +31,18 @@ func (c *PlayCommand) ImplExec(ctx *context.Impl, args []string) (err error) {
 	if !file.IsFile {
 		return errNotFile
 	}
-	// play video via mpv
+	// Play video via mpv
 	hls, err := ctx.Agent.VideoHlsContent(file.PickCode)
 	if err != nil {
 		return
 	}
-	cmd := exec.Command(exe,
-		fmt.Sprintf("--title=%s", file.Name), "-")
+	cmd := exec.Command(ctx.Conf.Mpv.Path,
+		fmt.Sprintf("--title=%s", file.Name))
+	if ctx.Conf.Mpv.Fs {
+		cmd.Args = append(cmd.Args, "--fullscreen")
+	}
+	// Read HLS content from stdin
+	cmd.Args = append(cmd.Args, "-")
 	cmd.Stdin = bytes.NewReader(hls)
 	// TODO: handle interrupt signal.
 	return cmd.Run()
