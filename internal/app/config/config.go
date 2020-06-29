@@ -3,7 +3,6 @@ package config
 import (
 	"go.dead.blue/cli115/internal/pkg/util"
 	"gopkg.in/yaml.v2"
-	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -55,31 +54,26 @@ func Load() (conf *Conf) {
 	if file, err := os.Open(confFile); err == nil {
 		defer util.QuietlyClose(file)
 		_ = yaml.NewDecoder(file).Decode(conf)
-	} else {
-		log.Printf("Fail to load config file: %s", confFile)
 	}
 	// Default config
 	if conf.Aria2 == nil {
+		conf.Aria2 = &Aria2Conf{Path: "", Rpc: false}
 		if exe, err := exec.LookPath("aria2c"); err == nil {
-			conf.Aria2 = &Aria2Conf{
-				Path: exe,
-				Rpc:  false,
-			}
+			conf.Aria2.Path = exe
 		}
 	}
 	if conf.Curl == nil {
+		conf.Curl = &CurlConf{}
 		if exe, err := exec.LookPath("curl"); err == nil {
-			conf.Curl = &CurlConf{
-				Path: exe,
-			}
+			conf.Curl.Path = exe
 		}
 	}
 	if conf.Mpv == nil {
+		conf.Mpv = &MpvConf{
+			Fs: false,
+		}
 		if exe, err := exec.LookPath("mpv"); err == nil {
-			conf.Mpv = &MpvConf{
-				Path: exe,
-				Fs:   false,
-			}
+			conf.Mpv.Path = exe
 		}
 	}
 	return
