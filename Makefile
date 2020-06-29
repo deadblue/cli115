@@ -4,7 +4,7 @@ GOBUILD_EXE=$(GO_EXE) build
 LDFLAGS="-s -w"
 
 OUTPUT_DIR=output
-CMDS = $(shell find ./cmd -type d -depth 1 -exec basename {} \;)
+CMDS = $(shell find ./cmd -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 
 all: build
 
